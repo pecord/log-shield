@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// NextAuth.js Required Models
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+
+  accounts Account[]
+  sessions Session[]
+  uploads  Upload[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Application Models
+
+model Upload {
+  id          String       @id @default(cuid())
+  userId      String
+  fileName    String
+  fileSize    Int
+  mimeType    String
+  storagePath String
+  lineCount   Int?
+  status      UploadStatus @default(PENDING)
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analysisResult AnalysisResult?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model AnalysisResult {
+  id       String         @id @default(cuid())
+  uploadId String         @unique
+  status   AnalysisStatus @default(IN_PROGRESS)
+
+  totalLinesAnalyzed Int @default(0)
+  totalFindings      Int @default(0)
+  criticalCount      Int @default(0)
+  highCount          Int @default(0)
+  mediumCount        Int @default(0)
+  lowCount           Int @default(0)
+  infoCount          Int @default(0)
+
+  ruleBasedCompleted Boolean   @default(false)
+  llmCompleted       Boolean   @default(false)
+  llmAvailable       Boolean   @default(false)
+  analysisStartedAt  DateTime?
+  analysisEndedAt    DateTime?
+  errorMessage       String?   @db.Text
+
+  overallSummary String? @db.Text
+
+  upload   Upload    @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+  findings Finding[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+model Finding {
+  id               String @id @default(cuid())
+  analysisResultId String
+
+  severity    Severity
+  category    ThreatCategory
+  title       String
+  description String         @db.Text
+
+  lineNumber     Int?
+  lineContent    String? @db.Text
+  matchedPattern String?
+
+  source      FindingSource
+  fingerprint String
+
+  recommendation String? @db.Text
+  confidence     Float?
+  mitreTactic    String?
+  mitreTechnique String?
+
+  analysisResult AnalysisResult @relation(fields: [analysisResultId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([analysisResultId])
+  @@index([severity])
+  @@index([category])
+  @@index([fingerprint])
+}
+
+// Enums
+
+enum UploadStatus {
+  PENDING
+  ANALYZING
+  COMPLETED
+  FAILED
+}
+
+enum AnalysisStatus {
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum Severity {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+  INFO
+}
+
+enum ThreatCategory {
+  SQL_INJECTION
+  XSS
+  BRUTE_FORCE
+  DIRECTORY_TRAVERSAL
+  COMMAND_INJECTION
+  SUSPICIOUS_STATUS_CODE
+  MALICIOUS_USER_AGENT
+  RATE_ANOMALY
+  PRIVILEGE_ESCALATION
+  DATA_EXFILTRATION
+  RECONNAISSANCE
+  OTHER
+}
+
+enum FindingSource {
+  RULE_BASED
+  LLM
+}

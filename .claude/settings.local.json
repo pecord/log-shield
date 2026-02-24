@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app:*)",
+      "Bash(npm install:*)",
+      "Bash(npx shadcn@latest init:*)",
+      "Bash(npx shadcn@latest add button card badge table dialog input label select skeleton toast dropdown-menu separator sheet tabs progress avatar sonner -y)",
+      "Bash(npx shadcn@latest add button card badge table dialog input label select skeleton dropdown-menu separator sheet tabs progress avatar sonner -y)",
+      "Bash(npx prisma:*)",
+      "Bash(npx tsc:*)",
+      "Bash(git init:*)",
+      "Bash(npm run build:*)",
+      "Bash(docker run:*)",
+      "Bash(pg_isready:*)",
+      "WebFetch(domain:www.prisma.io)",
+      "WebFetch(domain:authjs.dev)",
+      "Bash(docker compose:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(ls:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(git status:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

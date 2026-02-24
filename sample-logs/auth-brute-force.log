@@ -1,0 +1,191 @@
+Feb 23 06:00:01 webserver sshd[11201]: Server listening on 0.0.0.0 port 22.
+Feb 23 06:00:01 webserver sshd[11201]: Server listening on :: port 22.
+Feb 23 06:15:22 webserver sshd[11310]: Accepted publickey for admin from 192.168.1.10 port 52341 ssh2: RSA SHA256:abcdef1234567890
+Feb 23 06:15:22 webserver sshd[11310]: pam_unix(sshd:session): session opened for user admin(uid=1000) by (uid=0)
+Feb 23 06:15:23 webserver systemd-logind[523]: New session 14 of user admin.
+Feb 23 06:30:45 webserver sshd[11425]: Accepted publickey for developer from 192.168.1.20 port 48923 ssh2: RSA SHA256:fedcba0987654321
+Feb 23 06:30:45 webserver sshd[11425]: pam_unix(sshd:session): session opened for user developer(uid=1001) by (uid=0)
+Feb 23 06:30:46 webserver systemd-logind[523]: New session 15 of user developer.
+Feb 23 07:00:12 webserver sshd[11530]: Accepted password for deploy from 192.168.1.30 port 55102 ssh2
+Feb 23 07:00:12 webserver sshd[11530]: pam_unix(sshd:session): session opened for user deploy(uid=1002) by (uid=0)
+Feb 23 07:00:13 webserver systemd-logind[523]: New session 16 of user deploy.
+Feb 23 07:15:00 webserver sshd[11310]: pam_unix(sshd:session): session closed for user admin
+Feb 23 07:15:00 webserver systemd-logind[523]: Session 14 logged out. Waiting for processes to exit.
+Feb 23 07:15:01 webserver systemd-logind[523]: Removed session 14.
+Feb 23 07:45:33 webserver sshd[11620]: Accepted publickey for admin from 192.168.1.10 port 52890 ssh2: RSA SHA256:abcdef1234567890
+Feb 23 07:45:33 webserver sshd[11620]: pam_unix(sshd:session): session opened for user admin(uid=1000) by (uid=0)
+Feb 23 07:45:34 webserver systemd-logind[523]: New session 17 of user admin.
+Feb 23 08:00:05 webserver sshd[11530]: pam_unix(sshd:session): session closed for user deploy
+Feb 23 08:00:05 webserver systemd-logind[523]: Session 16 logged out. Waiting for processes to exit.
+Feb 23 08:00:06 webserver systemd-logind[523]: Removed session 16.
+Feb 23 08:10:00 webserver sshd[11701]: Invalid user test from 10.0.0.100 port 43210
+Feb 23 08:10:00 webserver sshd[11701]: pam_unix(sshd:auth): check pass; user unknown
+Feb 23 08:10:00 webserver sshd[11701]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.100
+Feb 23 08:10:01 webserver sshd[11701]: Failed password for invalid user test from 10.0.0.100 port 43210 ssh2
+Feb 23 08:10:01 webserver sshd[11701]: Connection closed by invalid user test 10.0.0.100 port 43210 [preauth]
+Feb 23 08:10:03 webserver sshd[11703]: Invalid user guest from 10.0.0.100 port 43212
+Feb 23 08:10:03 webserver sshd[11703]: pam_unix(sshd:auth): check pass; user unknown
+Feb 23 08:10:03 webserver sshd[11703]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.100
+Feb 23 08:10:04 webserver sshd[11703]: Failed password for invalid user guest from 10.0.0.100 port 43212 ssh2
+Feb 23 08:10:04 webserver sshd[11703]: Connection closed by invalid user guest 10.0.0.100 port 43212 [preauth]
+Feb 23 08:10:06 webserver sshd[11705]: Invalid user oracle from 10.0.0.100 port 43214
+Feb 23 08:10:06 webserver sshd[11705]: pam_unix(sshd:auth): check pass; user unknown
+Feb 23 08:10:06 webserver sshd[11705]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.100
+Feb 23 08:10:07 webserver sshd[11705]: Failed password for invalid user oracle from 10.0.0.100 port 43214 ssh2
+Feb 23 08:10:07 webserver sshd[11705]: Connection closed by invalid user oracle 10.0.0.100 port 43214 [preauth]
+Feb 23 08:10:09 webserver sshd[11707]: Invalid user postgres from 10.0.0.100 port 43216
+Feb 23 08:10:09 webserver sshd[11707]: pam_unix(sshd:auth): check pass; user unknown
+Feb 23 08:10:09 webserver sshd[11707]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.100
+Feb 23 08:10:10 webserver sshd[11707]: Failed password for invalid user postgres from 10.0.0.100 port 43216 ssh2
+Feb 23 08:10:10 webserver sshd[11707]: Connection closed by invalid user postgres 10.0.0.100 port 43216 [preauth]
+Feb 23 08:10:12 webserver sshd[11709]: Invalid user mysql from 10.0.0.100 port 43218
+Feb 23 08:10:12 webserver sshd[11709]: pam_unix(sshd:auth): check pass; user unknown
+Feb 23 08:10:12 webserver sshd[11709]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.100
+Feb 23 08:10:13 webserver sshd[11709]: Failed password for invalid user mysql from 10.0.0.100 port 43218 ssh2
+Feb 23 08:10:13 webserver sshd[11709]: Connection closed by invalid user mysql 10.0.0.100 port 43218 [preauth]
+Feb 23 08:10:15 webserver sshd[11711]: Invalid user ftpuser from 10.0.0.100 port 43220
+Feb 23 08:10:15 webserver sshd[11711]: pam_unix(sshd:auth): check pass; user unknown
+Feb 23 08:10:15 webserver sshd[11711]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.100
+Feb 23 08:10:16 webserver sshd[11711]: Failed password for invalid user ftpuser from 10.0.0.100 port 43220 ssh2
+Feb 23 08:10:16 webserver sshd[11711]: Connection closed by invalid user ftpuser 10.0.0.100 port 43220 [preauth]
+Feb 23 08:10:18 webserver sshd[11713]: Invalid user nagios from 10.0.0.100 port 43222
+Feb 23 08:10:18 webserver sshd[11713]: pam_unix(sshd:auth): check pass; user unknown
+Feb 23 08:10:18 webserver sshd[11713]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.100
+Feb 23 08:10:19 webserver sshd[11713]: Failed password for invalid user nagios from 10.0.0.100 port 43222 ssh2
+Feb 23 08:10:19 webserver sshd[11713]: Connection closed by invalid user nagios 10.0.0.100 port 43222 [preauth]
+Feb 23 08:10:21 webserver sshd[11715]: Invalid user tomcat from 10.0.0.100 port 43224
+Feb 23 08:10:21 webserver sshd[11715]: pam_unix(sshd:auth): check pass; user unknown
+Feb 23 08:10:21 webserver sshd[11715]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.100
+Feb 23 08:10:22 webserver sshd[11715]: Failed password for invalid user tomcat from 10.0.0.100 port 43224 ssh2
+Feb 23 08:10:22 webserver sshd[11715]: Connection closed by invalid user tomcat 10.0.0.100 port 43224 [preauth]
+Feb 23 08:10:24 webserver sshd[11717]: Invalid user webmaster from 10.0.0.100 port 43226
+Feb 23 08:10:24 webserver sshd[11717]: pam_unix(sshd:auth): check pass; user unknown
+Feb 23 08:10:24 webserver sshd[11717]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.100
+Feb 23 08:10:25 webserver sshd[11717]: Failed password for invalid user webmaster from 10.0.0.100 port 43226 ssh2
+Feb 23 08:10:25 webserver sshd[11717]: Connection closed by invalid user webmaster 10.0.0.100 port 43226 [preauth]
+Feb 23 08:10:27 webserver sshd[11719]: Invalid user info from 10.0.0.100 port 43228
+Feb 23 08:10:27 webserver sshd[11719]: pam_unix(sshd:auth): check pass; user unknown
+Feb 23 08:10:27 webserver sshd[11719]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.100
+Feb 23 08:10:28 webserver sshd[11719]: Failed password for invalid user info from 10.0.0.100 port 43228 ssh2
+Feb 23 08:10:28 webserver sshd[11719]: Connection closed by invalid user info 10.0.0.100 port 43228 [preauth]
+Feb 23 08:30:00 webserver sshd[11800]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:01 webserver sshd[11800]: Failed password for root from 10.0.0.99 port 44100 ssh2
+Feb 23 08:30:02 webserver sshd[11802]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:02 webserver sshd[11802]: Failed password for root from 10.0.0.99 port 44102 ssh2
+Feb 23 08:30:03 webserver sshd[11804]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:03 webserver sshd[11804]: Failed password for root from 10.0.0.99 port 44104 ssh2
+Feb 23 08:30:04 webserver sshd[11806]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:04 webserver sshd[11806]: Failed password for root from 10.0.0.99 port 44106 ssh2
+Feb 23 08:30:05 webserver sshd[11808]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:05 webserver sshd[11808]: Failed password for root from 10.0.0.99 port 44108 ssh2
+Feb 23 08:30:06 webserver sshd[11810]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:06 webserver sshd[11810]: Failed password for root from 10.0.0.99 port 44110 ssh2
+Feb 23 08:30:07 webserver sshd[11812]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:07 webserver sshd[11812]: Failed password for root from 10.0.0.99 port 44112 ssh2
+Feb 23 08:30:08 webserver sshd[11814]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:08 webserver sshd[11814]: Failed password for root from 10.0.0.99 port 44114 ssh2
+Feb 23 08:30:09 webserver sshd[11816]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:09 webserver sshd[11816]: Failed password for root from 10.0.0.99 port 44116 ssh2
+Feb 23 08:30:10 webserver sshd[11818]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:10 webserver sshd[11818]: Failed password for root from 10.0.0.99 port 44118 ssh2
+Feb 23 08:30:11 webserver sshd[11820]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:11 webserver sshd[11820]: Failed password for root from 10.0.0.99 port 44120 ssh2
+Feb 23 08:30:12 webserver sshd[11822]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:12 webserver sshd[11822]: Failed password for root from 10.0.0.99 port 44122 ssh2
+Feb 23 08:30:13 webserver sshd[11824]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:13 webserver sshd[11824]: Failed password for root from 10.0.0.99 port 44124 ssh2
+Feb 23 08:30:14 webserver sshd[11826]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:14 webserver sshd[11826]: Failed password for root from 10.0.0.99 port 44126 ssh2
+Feb 23 08:30:15 webserver sshd[11828]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:15 webserver sshd[11828]: Failed password for root from 10.0.0.99 port 44128 ssh2
+Feb 23 08:30:16 webserver sshd[11830]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:16 webserver sshd[11830]: Failed password for root from 10.0.0.99 port 44130 ssh2
+Feb 23 08:30:17 webserver sshd[11832]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:17 webserver sshd[11832]: Failed password for root from 10.0.0.99 port 44132 ssh2
+Feb 23 08:30:18 webserver sshd[11834]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:18 webserver sshd[11834]: Failed password for root from 10.0.0.99 port 44134 ssh2
+Feb 23 08:30:19 webserver sshd[11836]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:19 webserver sshd[11836]: Failed password for root from 10.0.0.99 port 44136 ssh2
+Feb 23 08:30:20 webserver sshd[11838]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:20 webserver sshd[11838]: Failed password for root from 10.0.0.99 port 44138 ssh2
+Feb 23 08:30:21 webserver sshd[11840]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:21 webserver sshd[11840]: Failed password for root from 10.0.0.99 port 44140 ssh2
+Feb 23 08:30:22 webserver sshd[11842]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:22 webserver sshd[11842]: Failed password for root from 10.0.0.99 port 44142 ssh2
+Feb 23 08:30:23 webserver sshd[11844]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:23 webserver sshd[11844]: Failed password for root from 10.0.0.99 port 44144 ssh2
+Feb 23 08:30:24 webserver sshd[11846]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:24 webserver sshd[11846]: Failed password for root from 10.0.0.99 port 44146 ssh2
+Feb 23 08:30:25 webserver sshd[11848]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:25 webserver sshd[11848]: Failed password for root from 10.0.0.99 port 44148 ssh2
+Feb 23 08:30:26 webserver sshd[11850]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:26 webserver sshd[11850]: Failed password for root from 10.0.0.99 port 44150 ssh2
+Feb 23 08:30:27 webserver sshd[11852]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:27 webserver sshd[11852]: Failed password for root from 10.0.0.99 port 44152 ssh2
+Feb 23 08:30:28 webserver sshd[11854]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:28 webserver sshd[11854]: Failed password for root from 10.0.0.99 port 44154 ssh2
+Feb 23 08:30:29 webserver sshd[11856]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:29 webserver sshd[11856]: Failed password for root from 10.0.0.99 port 44156 ssh2
+Feb 23 08:30:30 webserver sshd[11858]: message repeated 5 times: [ Failed password for root from 10.0.0.99 port 44158 ssh2]
+Feb 23 08:30:31 webserver sshd[11860]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:31 webserver sshd[11860]: Failed password for root from 10.0.0.99 port 44160 ssh2
+Feb 23 08:30:32 webserver sshd[11862]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:32 webserver sshd[11862]: Failed password for root from 10.0.0.99 port 44162 ssh2
+Feb 23 08:30:33 webserver sshd[11864]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:33 webserver sshd[11864]: Failed password for root from 10.0.0.99 port 44164 ssh2
+Feb 23 08:30:34 webserver sshd[11866]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:34 webserver sshd[11866]: Failed password for root from 10.0.0.99 port 44166 ssh2
+Feb 23 08:30:35 webserver sshd[11868]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:35 webserver sshd[11868]: Failed password for root from 10.0.0.99 port 44168 ssh2
+Feb 23 08:30:36 webserver sshd[11870]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:36 webserver sshd[11870]: Failed password for root from 10.0.0.99 port 44170 ssh2
+Feb 23 08:30:37 webserver sshd[11872]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:37 webserver sshd[11872]: Failed password for root from 10.0.0.99 port 44172 ssh2
+Feb 23 08:30:38 webserver sshd[11874]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:38 webserver sshd[11874]: Failed password for root from 10.0.0.99 port 44174 ssh2
+Feb 23 08:30:39 webserver sshd[11876]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:39 webserver sshd[11876]: Failed password for root from 10.0.0.99 port 44176 ssh2
+Feb 23 08:30:40 webserver sshd[11878]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:40 webserver sshd[11878]: Failed password for root from 10.0.0.99 port 44178 ssh2
+Feb 23 08:30:41 webserver sshd[11880]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:41 webserver sshd[11880]: Failed password for root from 10.0.0.99 port 44180 ssh2
+Feb 23 08:30:42 webserver sshd[11882]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:42 webserver sshd[11882]: Failed password for root from 10.0.0.99 port 44182 ssh2
+Feb 23 08:30:43 webserver sshd[11884]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:43 webserver sshd[11884]: Failed password for root from 10.0.0.99 port 44184 ssh2
+Feb 23 08:30:44 webserver sshd[11886]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=root
+Feb 23 08:30:44 webserver sshd[11886]: Failed password for root from 10.0.0.99 port 44186 ssh2
+Feb 23 08:35:00 webserver sshd[11425]: pam_unix(sshd:session): session closed for user developer
+Feb 23 08:35:00 webserver systemd-logind[523]: Session 15 logged out. Waiting for processes to exit.
+Feb 23 08:35:01 webserver systemd-logind[523]: Removed session 15.
+Feb 23 09:00:10 webserver sshd[11950]: Accepted publickey for deploy from 192.168.1.30 port 55890 ssh2: RSA SHA256:fedcba9876543210
+Feb 23 09:00:10 webserver sshd[11950]: pam_unix(sshd:session): session opened for user deploy(uid=1002) by (uid=0)
+Feb 23 09:00:11 webserver systemd-logind[523]: New session 18 of user deploy.
+Feb 23 09:30:00 webserver sshd[12001]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=admin
+Feb 23 09:30:00 webserver sshd[12001]: Failed password for admin from 10.0.0.99 port 45200 ssh2
+Feb 23 09:30:01 webserver sshd[12003]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=admin
+Feb 23 09:30:01 webserver sshd[12003]: Failed password for admin from 10.0.0.99 port 45202 ssh2
+Feb 23 09:30:02 webserver sshd[12005]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=admin
+Feb 23 09:30:02 webserver sshd[12005]: Failed password for admin from 10.0.0.99 port 45204 ssh2
+Feb 23 09:30:03 webserver sshd[12007]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=admin
+Feb 23 09:30:03 webserver sshd[12007]: Failed password for admin from 10.0.0.99 port 45206 ssh2
+Feb 23 09:30:04 webserver sshd[12009]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=admin
+Feb 23 09:30:04 webserver sshd[12009]: Failed password for admin from 10.0.0.99 port 45208 ssh2
+Feb 23 09:30:05 webserver sshd[12011]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=admin
+Feb 23 09:30:05 webserver sshd[12011]: Failed password for admin from 10.0.0.99 port 45210 ssh2
+Feb 23 09:30:06 webserver sshd[12013]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=admin
+Feb 23 09:30:06 webserver sshd[12013]: Failed password for admin from 10.0.0.99 port 45212 ssh2
+Feb 23 09:30:07 webserver sshd[12015]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.0.0.99 user=admin
+Feb 23 09:30:07 webserver sshd[12015]: Failed password for admin from 10.0.0.99 port 45214 ssh2
+Feb 23 09:30:08 webserver sshd[12017]: Accepted password for admin from 10.0.0.99 port 45216 ssh2
+Feb 23 09:30:08 webserver sshd[12017]: pam_unix(sshd:session): session opened for user admin(uid=1000) by (uid=0)
+Feb 23 09:30:09 webserver systemd-logind[523]: New session 19 of user admin.
+Feb 23 09:45:00 webserver sshd[11620]: pam_unix(sshd:session): session closed for user admin
+Feb 23 09:45:00 webserver systemd-logind[523]: Session 17 logged out. Waiting for processes to exit.
+Feb 23 09:45:01 webserver systemd-logind[523]: Removed session 17.
+Feb 23 10:00:00 webserver sshd[12100]: Accepted publickey for developer from 192.168.1.20 port 49102 ssh2: RSA SHA256:fedcba0987654321
+Feb 23 10:00:00 webserver sshd[12100]: pam_unix(sshd:session): session opened for user developer(uid=1001) by (uid=0)
+Feb 23 10:00:01 webserver systemd-logind[523]: New session 20 of user developer.
+Feb 23 10:30:00 webserver sshd[11950]: pam_unix(sshd:session): session closed for user deploy
+Feb 23 10:30:00 webserver systemd-logind[523]: Session 18 logged out. Waiting for processes to exit.
+Feb 23 10:30:01 webserver systemd-logind[523]: Removed session 18.

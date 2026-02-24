@@ -1,0 +1,197 @@
+{"timestamp":"2026-02-23T06:00:01Z","level":"INFO","service":"api","message":"Application started","version":"2.4.1","environment":"production"}
+{"timestamp":"2026-02-23T06:00:02Z","level":"INFO","service":"api","message":"Connected to database","host":"db-primary.internal","latency":23}
+{"timestamp":"2026-02-23T06:00:03Z","level":"INFO","service":"api","message":"Cache warmed","entries":1523}
+{"timestamp":"2026-02-23T06:01:15Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":45,"bytes":12450}
+{"timestamp":"2026-02-23T06:01:30Z","level":"INFO","service":"api","method":"GET","path":"/api/products/15","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":12,"bytes":2104}
+{"timestamp":"2026-02-23T06:02:00Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"192.168.1.10","userId":"user101","responseTime":89,"bytes":567}
+{"timestamp":"2026-02-23T06:05:12Z","level":"INFO","service":"api","method":"GET","path":"/api/users/me","status":200,"ip":"192.168.1.20","userId":"user202","responseTime":8,"bytes":934}
+{"timestamp":"2026-02-23T06:05:45Z","level":"INFO","service":"api","method":"PUT","path":"/api/users/me","status":200,"ip":"192.168.1.20","userId":"user202","responseTime":34,"bytes":934}
+{"timestamp":"2026-02-23T06:10:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":42,"bytes":12450}
+{"timestamp":"2026-02-23T06:10:30Z","level":"INFO","service":"api","method":"GET","path":"/api/products/7","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":11,"bytes":1756}
+{"timestamp":"2026-02-23T06:10:55Z","level":"INFO","service":"api","method":"POST","path":"/api/products/7/reviews","status":201,"ip":"172.16.0.5","userId":"user303","responseTime":56,"bytes":389}
+{"timestamp":"2026-02-23T06:15:22Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":67,"bytes":8920}
+{"timestamp":"2026-02-23T06:15:45Z","level":"INFO","service":"api","method":"GET","path":"/api/orders/1042","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":15,"bytes":1205}
+{"timestamp":"2026-02-23T06:20:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.20.30.40","userId":"user404","responseTime":48,"bytes":12450}
+{"timestamp":"2026-02-23T06:20:33Z","level":"INFO","service":"api","method":"GET","path":"/api/products/22","status":200,"ip":"10.20.30.40","userId":"user404","responseTime":14,"bytes":2301}
+{"timestamp":"2026-02-23T06:21:10Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"10.20.30.40","userId":"user404","responseTime":92,"bytes":567}
+{"timestamp":"2026-02-23T06:25:00Z","level":"INFO","service":"api","method":"DELETE","path":"/api/orders/1038","status":200,"ip":"192.168.1.20","userId":"user202","responseTime":28,"bytes":45}
+{"timestamp":"2026-02-23T06:30:12Z","level":"INFO","service":"api","method":"GET","path":"/api/users","status":200,"ip":"192.168.1.30","userId":"admin01","responseTime":55,"bytes":8341}
+{"timestamp":"2026-02-23T06:30:45Z","level":"INFO","service":"api","method":"GET","path":"/api/users/user202","status":200,"ip":"192.168.1.30","userId":"admin01","responseTime":9,"bytes":934}
+{"timestamp":"2026-02-23T06:35:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.2.100","userId":"user505","responseTime":44,"bytes":12450}
+{"timestamp":"2026-02-23T06:35:22Z","level":"INFO","service":"api","method":"POST","path":"/api/products/3/reviews","status":201,"ip":"192.168.2.100","userId":"user505","responseTime":61,"bytes":389}
+{"timestamp":"2026-02-23T06:40:00Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":71,"bytes":4523}
+{"timestamp":"2026-02-23T06:40:30Z","level":"INFO","service":"api","method":"PUT","path":"/api/orders/1039","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":45,"bytes":1205}
+{"timestamp":"2026-02-23T06:45:15Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.50.60.70","userId":"user606","responseTime":47,"bytes":12450}
+{"timestamp":"2026-02-23T06:45:50Z","level":"INFO","service":"api","method":"GET","path":"/api/products/31","status":200,"ip":"10.50.60.70","userId":"user606","responseTime":13,"bytes":2456}
+{"timestamp":"2026-02-23T06:50:00Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"10.50.60.70","userId":"user606","responseTime":87,"bytes":567}
+{"timestamp":"2026-02-23T07:00:05Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":43,"bytes":12450}
+{"timestamp":"2026-02-23T07:00:30Z","level":"INFO","service":"api","method":"GET","path":"/api/products/15","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":10,"bytes":2104}
+{"timestamp":"2026-02-23T07:01:00Z","level":"INFO","service":"api","method":"PUT","path":"/api/products/15","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":38,"bytes":2104}
+{"timestamp":"2026-02-23T07:05:00Z","level":"WARN","service":"api","method":"GET","path":"/api/admin/settings","status":403,"ip":"10.0.0.200","userId":"user707","responseTime":5,"bytes":89,"message":"Unauthorized access to admin endpoint"}
+{"timestamp":"2026-02-23T07:05:02Z","level":"WARN","service":"api","method":"GET","path":"/api/admin/users","status":403,"ip":"10.0.0.200","userId":"user707","responseTime":4,"bytes":89,"message":"Unauthorized access to admin endpoint"}
+{"timestamp":"2026-02-23T07:05:04Z","level":"WARN","service":"api","method":"GET","path":"/api/admin/config","status":403,"ip":"10.0.0.200","userId":"user707","responseTime":3,"bytes":89,"message":"Unauthorized access to admin endpoint"}
+{"timestamp":"2026-02-23T07:05:06Z","level":"WARN","service":"api","method":"POST","path":"/api/admin/users","status":403,"ip":"10.0.0.200","userId":"user707","responseTime":4,"bytes":89,"message":"Unauthorized access to admin endpoint"}
+{"timestamp":"2026-02-23T07:05:08Z","level":"WARN","service":"api","method":"DELETE","path":"/api/admin/users/admin01","status":403,"ip":"10.0.0.200","userId":"user707","responseTime":3,"bytes":89,"message":"Unauthorized access to admin endpoint"}
+{"timestamp":"2026-02-23T07:05:10Z","level":"WARN","service":"api","method":"PUT","path":"/api/admin/config","status":403,"ip":"10.0.0.200","userId":"user707","responseTime":4,"bytes":89,"message":"Unauthorized access to admin endpoint"}
+{"timestamp":"2026-02-23T07:05:12Z","level":"WARN","service":"api","method":"GET","path":"/api/admin/logs","status":403,"ip":"10.0.0.200","userId":"user707","responseTime":3,"bytes":89,"message":"Unauthorized access to admin endpoint"}
+{"timestamp":"2026-02-23T07:05:14Z","level":"WARN","service":"api","method":"GET","path":"/api/admin/database","status":403,"ip":"10.0.0.200","userId":"user707","responseTime":4,"bytes":89,"message":"Unauthorized access to admin endpoint"}
+{"timestamp":"2026-02-23T07:05:30Z","level":"WARN","service":"api","method":"PUT","path":"/api/users/user707","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":35,"bytes":934,"message":"User profile updated"}
+{"timestamp":"2026-02-23T07:05:45Z","level":"INFO","service":"api","method":"GET","path":"/api/admin/settings","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":12,"bytes":4523,"message":"Admin endpoint accessed successfully"}
+{"timestamp":"2026-02-23T07:05:46Z","level":"INFO","service":"api","method":"GET","path":"/api/admin/users","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":55,"bytes":89234,"message":"Admin endpoint accessed successfully"}
+{"timestamp":"2026-02-23T07:05:48Z","level":"INFO","service":"api","method":"GET","path":"/api/admin/config","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":8,"bytes":2345,"message":"Admin endpoint accessed successfully"}
+{"timestamp":"2026-02-23T07:05:50Z","level":"INFO","service":"api","method":"PUT","path":"/api/admin/config","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":23,"bytes":2345,"message":"Admin config modified"}
+{"timestamp":"2026-02-23T07:10:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.20","userId":"user202","responseTime":46,"bytes":12450}
+{"timestamp":"2026-02-23T07:10:30Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"192.168.1.20","userId":"user202","responseTime":95,"bytes":567}
+{"timestamp":"2026-02-23T07:15:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":41,"bytes":12450}
+{"timestamp":"2026-02-23T07:15:45Z","level":"INFO","service":"api","method":"GET","path":"/api/products/12","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":9,"bytes":1987}
+{"timestamp":"2026-02-23T07:20:00Z","level":"ERROR","service":"api","method":"GET","path":"/api/products?id=1'+OR+'1'='1","status":500,"ip":"45.33.32.156","userId":null,"responseTime":234,"bytes":2345,"message":"SQL syntax error in query","stackTrace":"Error: near \"OR\": syntax error at Query.run"}
+{"timestamp":"2026-02-23T07:20:01Z","level":"ERROR","service":"api","method":"GET","path":"/api/products?id=1+UNION+SELECT+*+FROM+users","status":500,"ip":"45.33.32.156","userId":null,"responseTime":189,"bytes":2345,"message":"SQL syntax error in query","stackTrace":"Error: SELECTs to the left and right of UNION do not have the same number of result columns"}
+{"timestamp":"2026-02-23T07:20:02Z","level":"ERROR","service":"api","method":"GET","path":"/api/products?id=1';DROP+TABLE+users;--","status":500,"ip":"45.33.32.156","userId":null,"responseTime":156,"bytes":2345,"message":"SQL syntax error in query","stackTrace":"Error: near \"DROP\": syntax error at Query.run"}
+{"timestamp":"2026-02-23T07:20:03Z","level":"ERROR","service":"api","method":"POST","path":"/api/products","status":500,"ip":"45.33.32.156","userId":null,"responseTime":201,"bytes":2345,"message":"Unexpected token in JSON at position 0"}
+{"timestamp":"2026-02-23T07:20:04Z","level":"ERROR","service":"api","method":"GET","path":"/api/users?search=<script>alert(1)</script>","status":500,"ip":"45.33.32.156","userId":null,"responseTime":178,"bytes":2345,"message":"Invalid characters in search parameter"}
+{"timestamp":"2026-02-23T07:20:05Z","level":"ERROR","service":"api","method":"GET","path":"/api/products?category=../../etc/passwd","status":500,"ip":"45.33.32.156","userId":null,"responseTime":145,"bytes":2345,"message":"Invalid path in parameter"}
+{"timestamp":"2026-02-23T07:20:06Z","level":"ERROR","service":"api","method":"GET","path":"/api/products?id=1;cat+/etc/passwd","status":500,"ip":"45.33.32.156","userId":null,"responseTime":167,"bytes":2345,"message":"Command injection detected"}
+{"timestamp":"2026-02-23T07:20:07Z","level":"ERROR","service":"api","method":"GET","path":"/api/products?id=1|whoami","status":500,"ip":"45.33.32.156","userId":null,"responseTime":134,"bytes":2345,"message":"Pipe character not allowed in parameter"}
+{"timestamp":"2026-02-23T07:20:08Z","level":"ERROR","service":"api","method":"GET","path":"/api/products?id=`id`","status":500,"ip":"45.33.32.156","userId":null,"responseTime":122,"bytes":2345,"message":"Backtick character not allowed in parameter"}
+{"timestamp":"2026-02-23T07:20:09Z","level":"ERROR","service":"api","method":"GET","path":"/api/products?id=${7*7}","status":500,"ip":"45.33.32.156","userId":null,"responseTime":98,"bytes":2345,"message":"Template injection detected"}
+{"timestamp":"2026-02-23T07:25:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.20.30.40","userId":"user404","responseTime":44,"bytes":12450}
+{"timestamp":"2026-02-23T07:25:30Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"10.20.30.40","userId":"user404","responseTime":88,"bytes":567}
+{"timestamp":"2026-02-23T07:30:00Z","level":"INFO","service":"api","method":"GET","path":"/api/users/me","status":200,"ip":"192.168.2.100","userId":"user505","responseTime":7,"bytes":934}
+{"timestamp":"2026-02-23T07:30:15Z","level":"INFO","service":"api","method":"PUT","path":"/api/users/me","status":200,"ip":"192.168.2.100","userId":"user505","responseTime":32,"bytes":934}
+{"timestamp":"2026-02-23T07:35:00Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":65,"bytes":8920}
+{"timestamp":"2026-02-23T07:35:30Z","level":"INFO","service":"api","method":"GET","path":"/api/orders/1042","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":14,"bytes":1205}
+{"timestamp":"2026-02-23T07:40:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.50.60.70","userId":"user606","responseTime":49,"bytes":12450}
+{"timestamp":"2026-02-23T07:40:30Z","level":"INFO","service":"api","method":"GET","path":"/api/products/31","status":200,"ip":"10.50.60.70","userId":"user606","responseTime":12,"bytes":2456}
+{"timestamp":"2026-02-23T07:45:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.20","userId":"user202","responseTime":43,"bytes":12450}
+{"timestamp":"2026-02-23T07:45:33Z","level":"INFO","service":"api","method":"POST","path":"/api/products/8/reviews","status":201,"ip":"192.168.1.20","userId":"user202","responseTime":58,"bytes":389}
+{"timestamp":"2026-02-23T07:50:00Z","level":"INFO","service":"api","method":"GET","path":"/api/users","status":200,"ip":"192.168.1.30","userId":"admin01","responseTime":52,"bytes":8341}
+{"timestamp":"2026-02-23T07:55:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":40,"bytes":12450}
+{"timestamp":"2026-02-23T08:00:00Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"10.20.30.40","userId":"user404","responseTime":68,"bytes":4523}
+{"timestamp":"2026-02-23T08:00:30Z","level":"INFO","service":"api","method":"DELETE","path":"/api/orders/1040","status":200,"ip":"10.20.30.40","userId":"user404","responseTime":25,"bytes":45}
+{"timestamp":"2026-02-23T08:05:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":46,"bytes":12450}
+{"timestamp":"2026-02-23T08:05:30Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"192.168.1.10","userId":"user101","responseTime":91,"bytes":567}
+{"timestamp":"2026-02-23T08:10:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.2.100","userId":"user505","responseTime":45,"bytes":12450}
+{"timestamp":"2026-02-23T08:10:30Z","level":"INFO","service":"api","method":"POST","path":"/api/products/22/reviews","status":201,"ip":"192.168.2.100","userId":"user505","responseTime":54,"bytes":389}
+{"timestamp":"2026-02-23T08:15:00Z","level":"INFO","service":"api","method":"GET","path":"/api/users/me","status":200,"ip":"10.50.60.70","userId":"user606","responseTime":8,"bytes":934}
+{"timestamp":"2026-02-23T08:20:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":42,"bytes":12450}
+{"timestamp":"2026-02-23T08:20:33Z","level":"INFO","service":"api","method":"GET","path":"/api/products/5","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":10,"bytes":1645}
+{"timestamp":"2026-02-23T08:25:00Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"172.16.0.5","userId":"user303","responseTime":86,"bytes":567}
+{"timestamp":"2026-02-23T08:30:00Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"192.168.1.20","userId":"user202","responseTime":64,"bytes":8920}
+{"timestamp":"2026-02-23T08:30:30Z","level":"INFO","service":"api","method":"PUT","path":"/api/orders/1043","status":200,"ip":"192.168.1.20","userId":"user202","responseTime":41,"bytes":1205}
+{"timestamp":"2026-02-23T08:35:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.20.30.40","userId":"user404","responseTime":47,"bytes":12450}
+{"timestamp":"2026-02-23T08:40:00Z","level":"INFO","service":"api","method":"GET","path":"/api/users","status":200,"ip":"192.168.1.30","userId":"admin01","responseTime":54,"bytes":8341}
+{"timestamp":"2026-02-23T08:45:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":44,"bytes":12450}
+{"timestamp":"2026-02-23T08:45:30Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"192.168.1.10","userId":"user101","responseTime":93,"bytes":567}
+{"timestamp":"2026-02-23T08:50:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.50.60.70","userId":"user606","responseTime":46,"bytes":12450}
+{"timestamp":"2026-02-23T08:55:00Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"192.168.2.100","userId":"user505","responseTime":69,"bytes":4523}
+{"timestamp":"2026-02-23T09:00:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":41,"bytes":12450}
+{"timestamp":"2026-02-23T09:05:00Z","level":"INFO","service":"api","method":"POST","path":"/api/products/18/reviews","status":201,"ip":"10.20.30.40","userId":"user404","responseTime":57,"bytes":389}
+{"timestamp":"2026-02-23T09:10:00Z","level":"INFO","service":"api","method":"GET","path":"/api/users/me","status":200,"ip":"192.168.1.20","userId":"user202","responseTime":7,"bytes":934}
+{"timestamp":"2026-02-23T09:15:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":43,"bytes":12450}
+{"timestamp":"2026-02-23T09:15:30Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"192.168.1.10","userId":"user101","responseTime":90,"bytes":567}
+{"timestamp":"2026-02-23T09:20:00Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"10.50.60.70","userId":"user606","responseTime":66,"bytes":4523}
+{"timestamp":"2026-02-23T09:25:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.2.100","userId":"user505","responseTime":44,"bytes":12450}
+{"timestamp":"2026-02-23T09:30:00Z","level":"INFO","service":"api","method":"GET","path":"/api/users","status":200,"ip":"192.168.1.30","userId":"admin01","responseTime":53,"bytes":8341}
+{"timestamp":"2026-02-23T09:35:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":42,"bytes":12450}
+{"timestamp":"2026-02-23T09:40:00Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"10.20.30.40","userId":"user404","responseTime":88,"bytes":567}
+{"timestamp":"2026-02-23T09:45:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.20","userId":"user202","responseTime":45,"bytes":12450}
+{"timestamp":"2026-02-23T09:50:00Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":67,"bytes":8920}
+{"timestamp":"2026-02-23T09:55:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.50.60.70","userId":"user606","responseTime":48,"bytes":12450}
+{"timestamp":"2026-02-23T10:00:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.2.100","userId":"user505","responseTime":43,"bytes":12450}
+{"timestamp":"2026-02-23T10:05:00Z","level":"INFO","service":"api","method":"GET","path":"/api/users","status":200,"ip":"192.168.1.30","userId":"admin01","responseTime":51,"bytes":8341}
+{"timestamp":"2026-02-23T10:10:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":44,"bytes":12450}
+{"timestamp":"2026-02-23T10:15:00Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"172.16.0.5","userId":"user303","responseTime":89,"bytes":567}
+{"timestamp":"2026-02-23T10:20:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.20.30.40","userId":"user404","responseTime":46,"bytes":12450}
+{"timestamp":"2026-02-23T10:25:00Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"192.168.1.20","userId":"user202","responseTime":65,"bytes":8920}
+{"timestamp":"2026-02-23T10:30:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.50.60.70","userId":"user606","responseTime":47,"bytes":12450}
+{"timestamp":"2026-02-23T10:35:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.2.100","userId":"user505","responseTime":44,"bytes":12450}
+{"timestamp":"2026-02-23T10:35:30Z","level":"INFO","service":"api","method":"POST","path":"/api/products/11/reviews","status":201,"ip":"192.168.2.100","userId":"user505","responseTime":55,"bytes":389}
+{"timestamp":"2026-02-23T10:40:00Z","level":"INFO","service":"api","method":"GET","path":"/api/users","status":200,"ip":"192.168.1.30","userId":"admin01","responseTime":52,"bytes":8341}
+{"timestamp":"2026-02-23T10:40:30Z","level":"INFO","service":"api","method":"PUT","path":"/api/users/user505","status":200,"ip":"192.168.1.30","userId":"admin01","responseTime":28,"bytes":934}
+{"timestamp":"2026-02-23T10:45:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":42,"bytes":12450}
+{"timestamp":"2026-02-23T10:50:00Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"192.168.1.10","userId":"user101","responseTime":87,"bytes":567}
+{"timestamp":"2026-02-23T10:55:00Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":63,"bytes":4523}
+{"timestamp":"2026-02-23T11:00:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.20.30.40","userId":"user404","responseTime":45,"bytes":12450}
+{"timestamp":"2026-02-23T11:00:01Z","level":"INFO","service":"api","method":"GET","path":"/api/users/export","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":2345,"bytes":5242880,"message":"Bulk data export requested"}
+{"timestamp":"2026-02-23T11:00:15Z","level":"INFO","service":"api","method":"GET","path":"/api/users/export?format=csv","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":3456,"bytes":8388608,"message":"Bulk data export requested"}
+{"timestamp":"2026-02-23T11:00:30Z","level":"INFO","service":"api","method":"GET","path":"/api/data/download?table=users&format=json","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":4567,"bytes":15728640,"message":"Bulk data download"}
+{"timestamp":"2026-02-23T11:00:45Z","level":"INFO","service":"api","method":"GET","path":"/api/data/download?table=orders&format=json","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":5678,"bytes":20971520,"message":"Bulk data download"}
+{"timestamp":"2026-02-23T11:01:00Z","level":"INFO","service":"api","method":"GET","path":"/api/data/download?table=payments&format=csv","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":6789,"bytes":31457280,"message":"Bulk data download"}
+{"timestamp":"2026-02-23T11:01:15Z","level":"WARN","service":"api","method":"GET","path":"/api/data/download?table=credentials&format=json","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":3210,"bytes":2097152,"message":"Sensitive table accessed via bulk download"}
+{"timestamp":"2026-02-23T11:05:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.20","userId":"user202","responseTime":44,"bytes":12450}
+{"timestamp":"2026-02-23T11:10:00Z","level":"INFO","service":"api","method":"GET","path":"/api/users/me","status":200,"ip":"192.168.2.100","userId":"user505","responseTime":8,"bytes":934}
+{"timestamp":"2026-02-23T11:15:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.50.60.70","userId":"user606","responseTime":46,"bytes":12450}
+{"timestamp":"2026-02-23T11:20:00Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"192.168.1.10","userId":"user101","responseTime":90,"bytes":567}
+{"timestamp":"2026-02-23T11:25:00Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":67,"bytes":4523}
+{"timestamp":"2026-02-23T11:30:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.20.30.40","userId":"user404","responseTime":45,"bytes":12450}
+{"timestamp":"2026-02-23T11:35:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.20","userId":"user202","responseTime":43,"bytes":12450}
+{"timestamp":"2026-02-23T11:40:00Z","level":"INFO","service":"api","method":"GET","path":"/api/users","status":200,"ip":"192.168.1.30","userId":"admin01","responseTime":55,"bytes":8341}
+{"timestamp":"2026-02-23T11:45:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.2.100","userId":"user505","responseTime":44,"bytes":12450}
+{"timestamp":"2026-02-23T11:50:00Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":66,"bytes":8920}
+{"timestamp":"2026-02-23T11:55:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.50.60.70","userId":"user606","responseTime":47,"bytes":12450}
+{"timestamp":"2026-02-23T12:00:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":41,"bytes":12450}
+{"timestamp":"2026-02-23T12:05:00Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"10.20.30.40","userId":"user404","responseTime":87,"bytes":567}
+{"timestamp":"2026-02-23T12:10:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":43,"bytes":12450}
+{"timestamp":"2026-02-23T12:15:00Z","level":"INFO","service":"api","method":"GET","path":"/api/users/me","status":200,"ip":"192.168.1.20","userId":"user202","responseTime":7,"bytes":934}
+{"timestamp":"2026-02-23T12:20:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.2.100","userId":"user505","responseTime":45,"bytes":12450}
+{"timestamp":"2026-02-23T03:00:01Z","level":"INFO","service":"api","method":"GET","path":"/api/users","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":55,"bytes":8341,"message":"Off-hours access"}
+{"timestamp":"2026-02-23T03:00:15Z","level":"INFO","service":"api","method":"GET","path":"/api/users/export","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":2100,"bytes":5242880,"message":"Bulk export during off-hours"}
+{"timestamp":"2026-02-23T03:00:30Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":68,"bytes":89234,"message":"Off-hours access"}
+{"timestamp":"2026-02-23T03:00:45Z","level":"INFO","service":"api","method":"GET","path":"/api/data/download?table=users&format=csv","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":4500,"bytes":15728640,"message":"Bulk download during off-hours"}
+{"timestamp":"2026-02-23T03:01:00Z","level":"INFO","service":"api","method":"GET","path":"/api/data/download?table=orders&format=csv","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":5200,"bytes":20971520,"message":"Bulk download during off-hours"}
+{"timestamp":"2026-02-23T03:01:15Z","level":"INFO","service":"api","method":"GET","path":"/api/data/download?table=products&format=csv","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":3800,"bytes":10485760,"message":"Bulk download during off-hours"}
+{"timestamp":"2026-02-23T03:01:30Z","level":"INFO","service":"api","method":"GET","path":"/api/admin/database/backup","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":12340,"bytes":104857600,"message":"Full database backup triggered during off-hours"}
+{"timestamp":"2026-02-23T03:02:00Z","level":"WARN","service":"api","method":"GET","path":"/api/admin/logs","status":200,"ip":"10.0.0.200","userId":"user707","responseTime":890,"bytes":5242880,"message":"Admin logs accessed during off-hours"}
+{"timestamp":"2026-02-23T13:00:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":44,"bytes":12450}
+{"timestamp":"2026-02-23T13:00:01Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"45.33.32.156","userId":null,"responseTime":43,"bytes":12450}
+{"timestamp":"2026-02-23T13:00:01Z","level":"INFO","service":"api","method":"GET","path":"/api/products/1","status":200,"ip":"45.33.32.156","userId":null,"responseTime":11,"bytes":2104}
+{"timestamp":"2026-02-23T13:00:02Z","level":"INFO","service":"api","method":"GET","path":"/api/products/2","status":200,"ip":"45.33.32.156","userId":null,"responseTime":10,"bytes":1987}
+{"timestamp":"2026-02-23T13:00:02Z","level":"INFO","service":"api","method":"GET","path":"/api/products/3","status":200,"ip":"45.33.32.156","userId":null,"responseTime":12,"bytes":1756}
+{"timestamp":"2026-02-23T13:00:03Z","level":"INFO","service":"api","method":"GET","path":"/api/products/4","status":200,"ip":"45.33.32.156","userId":null,"responseTime":9,"bytes":2301}
+{"timestamp":"2026-02-23T13:00:03Z","level":"INFO","service":"api","method":"GET","path":"/api/products/5","status":200,"ip":"45.33.32.156","userId":null,"responseTime":11,"bytes":1645}
+{"timestamp":"2026-02-23T13:00:04Z","level":"INFO","service":"api","method":"GET","path":"/api/products/6","status":200,"ip":"45.33.32.156","userId":null,"responseTime":10,"bytes":2104}
+{"timestamp":"2026-02-23T13:00:04Z","level":"INFO","service":"api","method":"GET","path":"/api/products/7","status":200,"ip":"45.33.32.156","userId":null,"responseTime":12,"bytes":1756}
+{"timestamp":"2026-02-23T13:00:05Z","level":"INFO","service":"api","method":"GET","path":"/api/products/8","status":200,"ip":"45.33.32.156","userId":null,"responseTime":9,"bytes":1645}
+{"timestamp":"2026-02-23T13:00:05Z","level":"INFO","service":"api","method":"GET","path":"/api/products/9","status":200,"ip":"45.33.32.156","userId":null,"responseTime":11,"bytes":2301}
+{"timestamp":"2026-02-23T13:00:06Z","level":"INFO","service":"api","method":"GET","path":"/api/products/10","status":200,"ip":"45.33.32.156","userId":null,"responseTime":10,"bytes":1987}
+{"timestamp":"2026-02-23T13:00:06Z","level":"INFO","service":"api","method":"GET","path":"/api/products/11","status":200,"ip":"45.33.32.156","userId":null,"responseTime":12,"bytes":2104}
+{"timestamp":"2026-02-23T13:00:07Z","level":"INFO","service":"api","method":"GET","path":"/api/products/12","status":200,"ip":"45.33.32.156","userId":null,"responseTime":9,"bytes":1987}
+{"timestamp":"2026-02-23T13:00:07Z","level":"INFO","service":"api","method":"GET","path":"/api/products/13","status":200,"ip":"45.33.32.156","userId":null,"responseTime":11,"bytes":1756}
+{"timestamp":"2026-02-23T13:00:08Z","level":"INFO","service":"api","method":"GET","path":"/api/products/14","status":200,"ip":"45.33.32.156","userId":null,"responseTime":10,"bytes":2301}
+{"timestamp":"2026-02-23T13:00:08Z","level":"INFO","service":"api","method":"GET","path":"/api/products/15","status":200,"ip":"45.33.32.156","userId":null,"responseTime":12,"bytes":2104}
+{"timestamp":"2026-02-23T13:00:09Z","level":"INFO","service":"api","method":"GET","path":"/api/products/16","status":200,"ip":"45.33.32.156","userId":null,"responseTime":9,"bytes":1645}
+{"timestamp":"2026-02-23T13:00:09Z","level":"INFO","service":"api","method":"GET","path":"/api/products/17","status":200,"ip":"45.33.32.156","userId":null,"responseTime":11,"bytes":1987}
+{"timestamp":"2026-02-23T13:00:10Z","level":"INFO","service":"api","method":"GET","path":"/api/products/18","status":200,"ip":"45.33.32.156","userId":null,"responseTime":10,"bytes":2104}
+{"timestamp":"2026-02-23T13:00:10Z","level":"INFO","service":"api","method":"GET","path":"/api/products/19","status":200,"ip":"45.33.32.156","userId":null,"responseTime":12,"bytes":1756}
+{"timestamp":"2026-02-23T13:00:11Z","level":"INFO","service":"api","method":"GET","path":"/api/products/20","status":200,"ip":"45.33.32.156","userId":null,"responseTime":9,"bytes":2301}
+{"timestamp":"2026-02-23T13:00:11Z","level":"INFO","service":"api","method":"GET","path":"/api/users","status":200,"ip":"45.33.32.156","userId":null,"responseTime":55,"bytes":8341}
+{"timestamp":"2026-02-23T13:00:12Z","level":"INFO","service":"api","method":"GET","path":"/api/users/user101","status":200,"ip":"45.33.32.156","userId":null,"responseTime":8,"bytes":934}
+{"timestamp":"2026-02-23T13:00:12Z","level":"INFO","service":"api","method":"GET","path":"/api/users/user202","status":200,"ip":"45.33.32.156","userId":null,"responseTime":7,"bytes":934}
+{"timestamp":"2026-02-23T13:00:13Z","level":"INFO","service":"api","method":"GET","path":"/api/users/user303","status":200,"ip":"45.33.32.156","userId":null,"responseTime":8,"bytes":934}
+{"timestamp":"2026-02-23T13:00:13Z","level":"INFO","service":"api","method":"GET","path":"/api/users/user404","status":200,"ip":"45.33.32.156","userId":null,"responseTime":7,"bytes":934}
+{"timestamp":"2026-02-23T13:00:14Z","level":"INFO","service":"api","method":"GET","path":"/api/users/user505","status":200,"ip":"45.33.32.156","userId":null,"responseTime":8,"bytes":934}
+{"timestamp":"2026-02-23T13:00:14Z","level":"INFO","service":"api","method":"GET","path":"/api/users/user606","status":200,"ip":"45.33.32.156","userId":null,"responseTime":7,"bytes":934}
+{"timestamp":"2026-02-23T13:00:15Z","level":"INFO","service":"api","method":"GET","path":"/api/users/user707","status":200,"ip":"45.33.32.156","userId":null,"responseTime":8,"bytes":934}
+{"timestamp":"2026-02-23T13:00:15Z","level":"INFO","service":"api","method":"GET","path":"/api/users/admin01","status":200,"ip":"45.33.32.156","userId":null,"responseTime":7,"bytes":934}
+{"timestamp":"2026-02-23T13:00:16Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"45.33.32.156","userId":null,"responseTime":70,"bytes":89234}
+{"timestamp":"2026-02-23T13:00:16Z","level":"INFO","service":"api","method":"GET","path":"/api/orders/1042","status":200,"ip":"45.33.32.156","userId":null,"responseTime":14,"bytes":1205}
+{"timestamp":"2026-02-23T13:00:17Z","level":"INFO","service":"api","method":"GET","path":"/api/orders/1043","status":200,"ip":"45.33.32.156","userId":null,"responseTime":13,"bytes":1205}
+{"timestamp":"2026-02-23T13:00:17Z","level":"INFO","service":"api","method":"GET","path":"/api/orders/1044","status":200,"ip":"45.33.32.156","userId":null,"responseTime":14,"bytes":1205}
+{"timestamp":"2026-02-23T13:00:18Z","level":"INFO","service":"api","method":"GET","path":"/api/orders/1045","status":200,"ip":"45.33.32.156","userId":null,"responseTime":12,"bytes":1205}
+{"timestamp":"2026-02-23T13:00:18Z","level":"INFO","service":"api","method":"GET","path":"/api/orders/1046","status":200,"ip":"45.33.32.156","userId":null,"responseTime":13,"bytes":1205}
+{"timestamp":"2026-02-23T13:00:19Z","level":"INFO","service":"api","method":"GET","path":"/api/orders/1047","status":200,"ip":"45.33.32.156","userId":null,"responseTime":14,"bytes":1205}
+{"timestamp":"2026-02-23T13:00:19Z","level":"INFO","service":"api","method":"GET","path":"/api/orders/1048","status":200,"ip":"45.33.32.156","userId":null,"responseTime":11,"bytes":1205}
+{"timestamp":"2026-02-23T13:00:20Z","level":"INFO","service":"api","method":"GET","path":"/api/orders/1049","status":200,"ip":"45.33.32.156","userId":null,"responseTime":13,"bytes":1205}
+{"timestamp":"2026-02-23T13:00:20Z","level":"INFO","service":"api","method":"GET","path":"/api/orders/1050","status":200,"ip":"45.33.32.156","userId":null,"responseTime":14,"bytes":1205}
+{"timestamp":"2026-02-23T13:05:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.20","userId":"user202","responseTime":44,"bytes":12450}
+{"timestamp":"2026-02-23T13:10:00Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"172.16.0.5","userId":"user303","responseTime":88,"bytes":567}
+{"timestamp":"2026-02-23T13:15:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.50.60.70","userId":"user606","responseTime":46,"bytes":12450}
+{"timestamp":"2026-02-23T13:20:00Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":65,"bytes":8920}
+{"timestamp":"2026-02-23T13:25:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"10.20.30.40","userId":"user404","responseTime":45,"bytes":12450}
+{"timestamp":"2026-02-23T13:30:00Z","level":"INFO","service":"api","method":"GET","path":"/api/users/me","status":200,"ip":"192.168.2.100","userId":"user505","responseTime":8,"bytes":934}
+{"timestamp":"2026-02-23T13:35:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.1.10","userId":"user101","responseTime":43,"bytes":12450}
+{"timestamp":"2026-02-23T13:40:00Z","level":"INFO","service":"api","method":"POST","path":"/api/orders","status":201,"ip":"192.168.1.20","userId":"user202","responseTime":91,"bytes":567}
+{"timestamp":"2026-02-23T13:45:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"172.16.0.5","userId":"user303","responseTime":42,"bytes":12450}
+{"timestamp":"2026-02-23T13:50:00Z","level":"INFO","service":"api","method":"GET","path":"/api/orders","status":200,"ip":"10.50.60.70","userId":"user606","responseTime":67,"bytes":4523}
+{"timestamp":"2026-02-23T13:55:00Z","level":"INFO","service":"api","method":"GET","path":"/api/products","status":200,"ip":"192.168.2.100","userId":"user505","responseTime":44,"bytes":12450}
+{"timestamp":"2026-02-23T14:00:00Z","level":"INFO","service":"api","message":"Health check passed","uptime":28800,"memoryUsage":"512MB","cpuUsage":"23%"}
