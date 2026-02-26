@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { unlink } from "fs/promises";
-import { join } from "path";
+import { resolveUserSettings } from "@/lib/user-settings";
+import { getStorageProviderForUser } from "@/lib/storage";
 
 export async function GET(
   request: NextRequest,
@@ -36,6 +36,8 @@ export async function GET(
           analysisStartedAt: true,
           analysisEndedAt: true,
           errorMessage: true,
+          skippedLineCount: true,
+          logFormat: true,
           createdAt: true,
         },
       },
@@ -74,9 +76,11 @@ export async function DELETE(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  // Delete file from filesystem
+  // Delete file from storage
   try {
-    await unlink(join(process.cwd(), upload.storagePath));
+    const userSettings = await resolveUserSettings(upload.userId);
+    const storage = getStorageProviderForUser(userSettings.s3Config);
+    await storage.delete(upload.storagePath);
   } catch {
     // File may already be deleted, continue
   }

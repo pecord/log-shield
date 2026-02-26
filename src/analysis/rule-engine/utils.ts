@@ -44,18 +44,27 @@ export function extractAllIps(line: string): string[] {
 /**
  * Try to extract a timestamp from common log formats.
  * Supports:
- *   - Apache/Nginx combined: [10/Oct/2023:13:55:36 +0000]
  *   - ISO 8601: 2023-10-10T13:55:36Z or 2023-10-10T13:55:36+00:00
- *   - Syslog-like: Oct 10 13:55:36
+ *   - Space-separated datetime: 2017-07-04 13:09:01 or 2017-07-04 13:09:01.050233
+ *   - Apache/Nginx combined: [10/Oct/2023:13:55:36 +0000]
  * Returns epoch milliseconds or null if not parseable.
  */
 export function extractTimestamp(line: string): number | null {
-  // ISO 8601
+  // ISO 8601 with T separator
   const isoMatch = line.match(
     /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2}))/
   );
   if (isoMatch) {
     const ts = Date.parse(isoMatch[1]);
+    if (!isNaN(ts)) return ts;
+  }
+
+  // Space-separated datetime (common in CSV exports and database logs)
+  const spaceMatch = line.match(
+    /(\d{4}-\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2}(?:\.\d+)?)/
+  );
+  if (spaceMatch) {
+    const ts = Date.parse(spaceMatch[1] + "T" + spaceMatch[2] + "Z");
     if (!isNaN(ts)) return ts;
   }
 
@@ -79,4 +88,33 @@ export function extractTimestamp(line: string): number | null {
 export function truncateLine(line: string, maxLength: number = 500): string {
   if (line.length <= maxLength) return line;
   return line.slice(0, maxLength) + "...";
+}
+
+/**
+ * Extract a username from common log formats.
+ *
+ * Supports:
+ *   - SSH: "Failed password for invalid user admin from ..."
+ *   - SSH: "Failed password for root from ..."
+ *   - Key-value: "user=admin" or "user: admin"
+ *   - Generic: "Login failed for user admin"
+ *
+ * Returns null if no username can be extracted.
+ */
+export function extractUsername(line: string): string | null {
+  // SSH: "Failed password for (invalid user )? <username> from"
+  const sshMatch = line.match(
+    /Failed password for (?:invalid user )?(\S+)\s+from/i
+  );
+  if (sshMatch) return sshMatch[1];
+
+  // "Login failed for user <username>"
+  const loginMatch = line.match(/Login failed for (?:user\s+)?(\S+)/i);
+  if (loginMatch) return loginMatch[1];
+
+  // Key-value: "user=<value>" or "user: <value>"
+  const kvMatch = line.match(/\buser[=:\s]+(\S+)/i);
+  if (kvMatch) return kvMatch[1];
+
+  return null;
 }

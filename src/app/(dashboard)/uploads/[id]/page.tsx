@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback, use } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,13 +12,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  SortableTableHead,
+  type SortDir,
 } from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -29,9 +25,13 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { SeverityBadge } from "@/components/analysis/severity-badge";
-import { ArrowLeft, Loader2, Brain, Shield, RotateCcw } from "lucide-react";
+import {
+  FindingDetailDialog,
+  type Finding,
+} from "@/components/findings/finding-detail-dialog";
+import { ArrowLeft, Loader2, Brain, Shield, RotateCcw, FileText, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
-import { CATEGORY_LABELS } from "@/lib/constants";
+import { CATEGORY_LABELS, SEVERITY_INDEX, SEVERITY_CHART_COLORS } from "@/lib/constants";
 
 interface Upload {
   id: string;
@@ -57,29 +57,36 @@ interface Upload {
     analysisStartedAt: string | null;
     analysisEndedAt: string | null;
     errorMessage: string | null;
+    skippedLineCount: number;
+    logFormat: string | null;
   };
-}
-
-interface Finding {
-  id: string;
-  severity: string;
-  category: string;
-  title: string;
-  description: string;
-  lineNumber: number | null;
-  lineContent: string | null;
-  matchedPattern: string | null;
-  source: string;
-  fingerprint: string;
-  recommendation: string | null;
-  confidence: number | null;
-  mitreTactic: string | null;
-  mitreTechnique: string | null;
 }
 
 interface AnalysisData {
   findings: Finding[];
   pagination: { page: number; limit: number; total: number; totalPages: number };
+  categoryBreakdown?: { category: string; _count: number }[];
+}
+
+/** Compute real progress percentage from analysis state */
+function computeProgress(ar: Upload["analysisResult"]): { percent: number; label: string } {
+  if (!ar) return { percent: 0, label: "Starting analysis..." };
+
+  if (ar.status === "COMPLETED") return { percent: 100, label: "Analysis complete" };
+  if (ar.status === "FAILED") return { percent: 100, label: "Analysis failed" };
+
+  // Rules in progress: 0-30%
+  if (!ar.ruleBasedCompleted) {
+    return { percent: 15, label: "Running rule-based detection..." };
+  }
+
+  // Rules done, LLM in progress: 30-95%
+  if (!ar.llmCompleted) {
+    return { percent: 50, label: "Running AI analysis..." };
+  }
+
+  // LLM done, finalizing
+  return { percent: 97, label: "Finalizing results..." };
 }
 
 export default function UploadDetailPage({
@@ -97,6 +104,66 @@ export default function UploadDetailPage({
   const [page, setPage] = useState(1);
   const [isReanalyzing, setIsReanalyzing] = useState(false);
 
+  // Track whether we've already fetched findings for early results
+  const fetchedRuleFindings = useRef(false);
+  const fetchedFinalFindings = useRef(false);
+
+  // Sorting state
+  const [sortBy, setSortBy] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>(null);
+
+  const handleSort = (key: string) => {
+    if (sortBy === key) {
+      setSortDir((prev) => (prev === "asc" ? "desc" : prev === "desc" ? null : "asc"));
+      if (sortDir === "desc") setSortBy(null);
+    } else {
+      setSortBy(key);
+      setSortDir("asc");
+    }
+  };
+
+  const sortedFindings = useMemo(() => {
+    if (!analysis?.findings || !sortBy || !sortDir) return analysis?.findings ?? [];
+    return [...analysis.findings].sort((a, b) => {
+      let cmp = 0;
+      switch (sortBy) {
+        case "severity":
+          cmp = (SEVERITY_INDEX[a.severity] ?? 99) - (SEVERITY_INDEX[b.severity] ?? 99);
+          break;
+        case "category":
+          cmp = (CATEGORY_LABELS[a.category] || a.category).localeCompare(
+            CATEGORY_LABELS[b.category] || b.category
+          );
+          break;
+        case "title":
+          cmp = a.title.localeCompare(b.title);
+          break;
+        case "line":
+          cmp = (a.lineNumber ?? 0) - (b.lineNumber ?? 0);
+          break;
+        case "confidence":
+          cmp = (a.confidence ?? 0) - (b.confidence ?? 0);
+          break;
+        default:
+          return 0;
+      }
+      return sortDir === "desc" ? -cmp : cmp;
+    });
+  }, [analysis?.findings, sortBy, sortDir]);
+
+  const fetchFindings = useCallback(async () => {
+    if (!upload?.analysisResult?.id) return;
+    const params = new URLSearchParams({ page: String(page), limit: "25" });
+    if (severityFilter !== "all") params.set("severity", severityFilter);
+    if (categoryFilter !== "all") params.set("category", categoryFilter);
+
+    const res = await fetch(
+      `/api/analysis/${upload.analysisResult.id}?${params}`
+    );
+    const data = await res.json();
+    setAnalysis(data);
+  }, [upload?.analysisResult?.id, page, severityFilter, categoryFilter]);
+
   // Fetch upload details
   useEffect(() => {
     fetch(`/api/uploads/${id}`)
@@ -106,40 +173,68 @@ export default function UploadDetailPage({
       .finally(() => setIsLoading(false));
   }, [id]);
 
-  // Poll for analysis completion
+  // Stream analysis progress via SSE + fetch findings progressively
   useEffect(() => {
     if (!upload?.analysisResult?.id) return;
-    if (
-      upload.status === "COMPLETED" ||
-      upload.status === "FAILED" ||
-      upload.analysisResult.status === "COMPLETED" ||
-      upload.analysisResult.status === "FAILED"
-    ) {
-      // Fetch findings once analysis is done
+
+    const ar = upload.analysisResult;
+    const isDone = upload.status === "COMPLETED" || upload.status === "FAILED" ||
+                   ar.status === "COMPLETED" || ar.status === "FAILED";
+
+    // Fetch findings when rule-based is done (early results)
+    if (ar.ruleBasedCompleted && !fetchedRuleFindings.current) {
+      fetchedRuleFindings.current = true;
+      fetchFindings();
+    }
+
+    // Re-fetch when fully complete (to get LLM findings + updated counts)
+    if (isDone && !fetchedFinalFindings.current) {
+      fetchedFinalFindings.current = true;
       fetchFindings();
       return;
     }
 
-    const interval = setInterval(async () => {
-      const res = await fetch(`/api/uploads/${id}`);
-      const data = await res.json();
+    if (isDone) return;
+
+    const es = new EventSource(`/api/uploads/${id}/stream`);
+
+    es.addEventListener("update", (e: MessageEvent) => {
+      const data: Upload = JSON.parse(e.data);
       setUpload(data);
 
-      if (data.status === "COMPLETED" || data.status === "FAILED") {
-        clearInterval(interval);
+      const arData = data.analysisResult;
+      if (!arData) return;
+
+      if (arData.ruleBasedCompleted && !fetchedRuleFindings.current) {
+        fetchedRuleFindings.current = true;
         fetchFindings();
       }
-    }, 3000);
 
-    return () => clearInterval(interval);
-  }, [upload?.analysisResult?.id, upload?.status]);
+      if (data.status === "COMPLETED" || data.status === "FAILED") {
+        fetchedFinalFindings.current = true;
+        fetchFindings();
+        es.close();
+      }
+    });
 
-  // Refetch findings when filters change
+    return () => es.close();
+  }, [upload?.analysisResult?.id, upload?.status, upload?.analysisResult?.ruleBasedCompleted, upload?.analysisResult?.llmCompleted, fetchFindings, id]);
+
+  // Refetch findings when filters change (works during analysis too)
   useEffect(() => {
-    if (upload?.analysisResult?.id && upload.status === "COMPLETED") {
+    const ar = upload?.analysisResult;
+    if (ar?.id && (upload?.status === "COMPLETED" || ar?.ruleBasedCompleted)) {
       fetchFindings();
     }
-  }, [severityFilter, categoryFilter, page]);
+  }, [severityFilter, categoryFilter, page, fetchFindings]);
+
+  // Reset tracking refs when re-analyzing
+  useEffect(() => {
+    if (upload?.status === "ANALYZING") {
+      fetchedRuleFindings.current = false;
+      fetchedFinalFindings.current = false;
+    }
+  }, [upload?.status]);
 
   const handleReanalyze = async () => {
     setIsReanalyzing(true);
@@ -153,6 +248,8 @@ export default function UploadDetailPage({
       }
       toast.success("Re-analysis started");
       setAnalysis(null);
+      fetchedRuleFindings.current = false;
+      fetchedFinalFindings.current = false;
       // Refresh upload to get new status
       const uploadRes = await fetch(`/api/uploads/${id}`);
       const data = await uploadRes.json();
@@ -164,19 +261,6 @@ export default function UploadDetailPage({
     } finally {
       setIsReanalyzing(false);
     }
-  };
-
-  const fetchFindings = async () => {
-    if (!upload?.analysisResult?.id) return;
-    const params = new URLSearchParams({ page: String(page), limit: "25" });
-    if (severityFilter !== "all") params.set("severity", severityFilter);
-    if (categoryFilter !== "all") params.set("category", categoryFilter);
-
-    const res = await fetch(
-      `/api/analysis/${upload.analysisResult.id}?${params}`
-    );
-    const data = await res.json();
-    setAnalysis(data);
   };
 
   if (isLoading) {
@@ -194,9 +278,15 @@ export default function UploadDetailPage({
   }
 
   const ar = upload.analysisResult;
+  const isPending = upload.status === "PENDING";
   const isAnalyzing = upload.status === "ANALYZING";
   const isCompleted = upload.status === "COMPLETED";
   const isFailed = upload.status === "FAILED";
+
+  // Show results when completed OR when rules are done during analysis
+  const showResults = isCompleted || (isAnalyzing && ar?.ruleBasedCompleted);
+  const llmPending = isAnalyzing && ar?.ruleBasedCompleted && !ar?.llmCompleted;
+  const progressInfo = computeProgress(ar);
 
   return (
     <div className="space-y-6">
@@ -207,14 +297,35 @@ export default function UploadDetailPage({
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-2xl font-bold tracking-tight leading-none">
               {upload.fileName}
             </h2>
-            <p className="text-sm text-muted-foreground">
-              {upload.lineCount?.toLocaleString() || "?"} lines &middot;{" "}
+            <Badge variant="outline" className="text-xs gap-1">
+              <FileText className="h-3 w-3" />
+              {ar ? ar.totalLinesAnalyzed.toLocaleString() : (upload.lineCount?.toLocaleString() || "?")} lines
+              {ar && ar.skippedLineCount > 0 && ` (${ar.skippedLineCount} skipped)`}
+            </Badge>
+            <Badge variant="outline" className="text-xs">
               {new Date(upload.createdAt).toLocaleString()}
-            </p>
+            </Badge>
+            {ar?.logFormat && (
+              <Badge variant="outline" className="text-xs">
+                {ar.logFormat.toUpperCase()}
+              </Badge>
+            )}
+            {ar && (
+              <Badge variant="outline" className="text-xs gap-1">
+                <Shield className="h-3 w-3" />
+                Rule-Based: {ar.ruleBasedCompleted ? "Complete" : "Pending"}
+              </Badge>
+            )}
+            {ar && (
+              <Badge variant="outline" className="text-xs gap-1">
+                <Brain className="h-3 w-3" />
+                LLM: {ar.llmAvailable ? (ar.llmCompleted ? "Complete" : "Pending") : "Not Configured"}
+              </Badge>
+            )}
           </div>
         </div>
         {isCompleted && (
@@ -242,12 +353,33 @@ export default function UploadDetailPage({
             <div className="text-center">
               <p className="font-medium">Analyzing log file...</p>
               <p className="text-sm text-muted-foreground">
-                {ar?.ruleBasedCompleted
-                  ? "Running LLM analysis..."
-                  : "Running rule-based detection..."}
+                {progressInfo.label}
               </p>
             </div>
-            <Progress value={ar?.ruleBasedCompleted ? 60 : 30} className="w-64" />
+            <Progress value={progressInfo.percent} className="w-64" />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Pending State */}
+      {isPending && (
+        <Card>
+          <CardContent className="flex flex-col items-center gap-4 py-8">
+            <Shield className="h-8 w-8 text-muted-foreground" />
+            <div className="text-center">
+              <p className="font-medium">Ready to analyze</p>
+              <p className="text-sm text-muted-foreground">
+                {upload.lineCount?.toLocaleString() || "?"} lines waiting for security analysis.
+              </p>
+            </div>
+            <Button onClick={handleReanalyze} disabled={isReanalyzing}>
+              {isReanalyzing ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Shield className="mr-2 h-4 w-4" />
+              )}
+              Start Analysis
+            </Button>
           </CardContent>
         </Card>
       )}
@@ -263,9 +395,10 @@ export default function UploadDetailPage({
         </Card>
       )}
 
-      {/* Analysis Summary */}
-      {isCompleted && ar && (
+      {/* Analysis Results — shown as soon as rule findings are available */}
+      {showResults && ar && (
         <>
+          {/* Severity Cards */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {[
               { label: "Critical", count: ar.criticalCount, color: "text-red-500" },
@@ -285,20 +418,51 @@ export default function UploadDetailPage({
             ))}
           </div>
 
-          {/* AI Indicators */}
-          <div className="flex gap-2">
-            <Badge variant="outline" className="gap-1">
-              <Shield className="h-3 w-3" />
-              Rule-Based: {ar.ruleBasedCompleted ? "Complete" : "Pending"}
-            </Badge>
-            <Badge variant="outline" className="gap-1">
-              <Brain className="h-3 w-3" />
-              LLM: {ar.llmAvailable ? (ar.llmCompleted ? "Complete" : "Pending") : "Not Configured"}
-            </Badge>
-          </div>
+          {/* LLM Pending Indicator */}
+          {llmPending && (
+            <Card className="border-dashed border-primary/40">
+              <CardContent className="flex items-center gap-3 py-4">
+                <Loader2 className="h-5 w-5 animate-spin text-primary shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">LLM analysis in progress</p>
+                  <p className="text-xs text-muted-foreground">
+                    AI-powered findings will appear when complete. Rule-based findings are shown below.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Overall Summary */}
-          {ar.overallSummary && (
+          {/* Threat Breakdown */}
+          {analysis?.categoryBreakdown && analysis.categoryBreakdown.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm font-medium">Threat Breakdown</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {analysis.categoryBreakdown
+                    .sort((a, b) => b._count - a._count)
+                    .map((item) => (
+                      <div
+                        key={item.category}
+                        className="flex items-center justify-between rounded-md border px-3 py-2"
+                      >
+                        <span className="text-sm">
+                          {CATEGORY_LABELS[item.category] || item.category}
+                        </span>
+                        <Badge variant="secondary" className="text-xs">
+                          {item._count}
+                        </Badge>
+                      </div>
+                    ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Overall Summary — only shown after LLM completes */}
+          {ar.overallSummary && ar.llmCompleted && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-sm font-medium">
@@ -320,6 +484,11 @@ export default function UploadDetailPage({
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <CardTitle className="text-sm font-medium">
                   Findings ({ar.totalFindings})
+                  {llmPending && (
+                    <span className="ml-2 text-xs font-normal text-muted-foreground">
+                      — AI findings pending
+                    </span>
+                  )}
                 </CardTitle>
                 <div className="flex gap-2">
                   <Select value={severityFilter} onValueChange={(v) => { setSeverityFilter(v); setPage(1); }}>
@@ -358,18 +527,31 @@ export default function UploadDetailPage({
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="w-24">Severity</TableHead>
-                          <TableHead className="w-40">Category</TableHead>
-                          <TableHead>Title</TableHead>
-                          <TableHead className="w-16">Line</TableHead>
+                          <SortableTableHead sortKey="severity" activeSort={sortBy} direction={sortDir} onSort={handleSort} className="w-24">
+                            Severity
+                          </SortableTableHead>
+                          <SortableTableHead sortKey="category" activeSort={sortBy} direction={sortDir} onSort={handleSort} className="w-40">
+                            Category
+                          </SortableTableHead>
+                          <SortableTableHead sortKey="title" activeSort={sortBy} direction={sortDir} onSort={handleSort}>
+                            Title
+                          </SortableTableHead>
+                          <SortableTableHead sortKey="confidence" activeSort={sortBy} direction={sortDir} onSort={handleSort} className="w-16">
+                            Conf.
+                          </SortableTableHead>
+                          <SortableTableHead sortKey="line" activeSort={sortBy} direction={sortDir} onSort={handleSort} className="w-16">
+                            Line
+                          </SortableTableHead>
                           <TableHead className="w-24">Source</TableHead>
+                          <TableHead className="w-8" />
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {analysis.findings.map((finding) => (
+                        {sortedFindings.map((finding) => (
                           <TableRow
                             key={finding.id}
                             className="cursor-pointer hover:bg-muted/50"
+                            style={{ borderLeft: `3px solid ${SEVERITY_CHART_COLORS[finding.severity] || "#9ca3af"}` }}
                             onClick={() => setSelectedFinding(finding)}
                           >
                             <TableCell>
@@ -378,8 +560,13 @@ export default function UploadDetailPage({
                             <TableCell className="text-xs">
                               {CATEGORY_LABELS[finding.category] || finding.category}
                             </TableCell>
-                            <TableCell className="max-w-xs truncate text-sm">
+                            <TableCell className="max-w-xs truncate text-sm" title={finding.title}>
                               {finding.title}
+                            </TableCell>
+                            <TableCell className="text-xs text-muted-foreground">
+                              {finding.confidence != null
+                                ? `${Math.round(finding.confidence * 100)}%`
+                                : "-"}
                             </TableCell>
                             <TableCell className="text-muted-foreground">
                               {finding.lineNumber || "-"}
@@ -395,6 +582,9 @@ export default function UploadDetailPage({
                               >
                                 {finding.source === "LLM" ? "AI" : "Rule"}
                               </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <ChevronRight className="h-4 w-4 text-muted-foreground" />
                             </TableCell>
                           </TableRow>
                         ))}
@@ -437,102 +627,10 @@ export default function UploadDetailPage({
         </>
       )}
 
-      {/* Finding Detail Dialog */}
-      <Dialog
-        open={!!selectedFinding}
-        onOpenChange={() => setSelectedFinding(null)}
-      >
-        <DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
-          {selectedFinding && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <SeverityBadge severity={selectedFinding.severity} />
-                  {selectedFinding.title}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">
-                    {CATEGORY_LABELS[selectedFinding.category] || selectedFinding.category}
-                  </Badge>
-                  <Badge variant={selectedFinding.source === "LLM" ? "default" : "secondary"}>
-                    {selectedFinding.source === "LLM" ? "AI Detection" : "Rule-Based"}
-                  </Badge>
-                  {selectedFinding.confidence && (
-                    <Badge variant="outline">
-                      Confidence: {Math.round(selectedFinding.confidence * 100)}%
-                    </Badge>
-                  )}
-                  {selectedFinding.lineNumber && (
-                    <Badge variant="outline">
-                      Line {selectedFinding.lineNumber}
-                    </Badge>
-                  )}
-                </div>
-
-                <div>
-                  <h4 className="mb-1 text-sm font-semibold">Description</h4>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {selectedFinding.description}
-                  </p>
-                </div>
-
-                {selectedFinding.lineContent && (
-                  <div>
-                    <h4 className="mb-1 text-sm font-semibold">Log Line</h4>
-                    <pre className="overflow-x-auto rounded-lg bg-muted p-3 text-xs">
-                      {selectedFinding.lineContent}
-                    </pre>
-                  </div>
-                )}
-
-                {selectedFinding.matchedPattern && (
-                  <div>
-                    <h4 className="mb-1 text-sm font-semibold">
-                      Matched Pattern
-                    </h4>
-                    <code className="rounded bg-muted px-2 py-1 text-xs">
-                      {selectedFinding.matchedPattern}
-                    </code>
-                  </div>
-                )}
-
-                {selectedFinding.recommendation && (
-                  <div>
-                    <h4 className="mb-1 text-sm font-semibold">
-                      Recommendation
-                    </h4>
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                      {selectedFinding.recommendation}
-                    </p>
-                  </div>
-                )}
-
-                {(selectedFinding.mitreTactic || selectedFinding.mitreTechnique) && (
-                  <div>
-                    <h4 className="mb-1 text-sm font-semibold">
-                      MITRE ATT&CK
-                    </h4>
-                    <div className="flex gap-2">
-                      {selectedFinding.mitreTactic && (
-                        <Badge variant="outline">
-                          {selectedFinding.mitreTactic}
-                        </Badge>
-                      )}
-                      {selectedFinding.mitreTechnique && (
-                        <Badge variant="outline">
-                          {selectedFinding.mitreTechnique}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      <FindingDetailDialog
+        finding={selectedFinding}
+        onClose={() => setSelectedFinding(null)}
+      />
     </div>
   );
 }

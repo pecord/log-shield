@@ -20,6 +20,7 @@ model User {
   accounts Account[]
   sessions Session[]
   uploads  Upload[]
+  settings UserSettings?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -73,6 +74,7 @@ model Upload {
   fileSize    Int
   mimeType    String
   storagePath String
+  storageType String       @default("local")
   lineCount   Int?
   status      UploadStatus @default(PENDING)
 
@@ -100,9 +102,14 @@ model AnalysisResult {
   lowCount           Int @default(0)
   infoCount          Int @default(0)
 
+  skippedLineCount   Int       @default(0)
+  logFormat          String?
+
   ruleBasedCompleted Boolean   @default(false)
   llmCompleted       Boolean   @default(false)
   llmAvailable       Boolean   @default(false)
+  llmTotalChunks     Int?
+  llmProcessedChunks Int?
   analysisStartedAt  DateTime?
   analysisEndedAt    DateTime?
   errorMessage       String?   @db.Text
@@ -139,6 +146,9 @@ model Finding {
   mitreTactic    String?
   mitreTechnique String?
 
+  /** Timestamp extracted from the original log line, if parseable */
+  eventTimestamp DateTime?
+
   analysisResult AnalysisResult @relation(fields: [analysisResultId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
@@ -147,6 +157,35 @@ model Finding {
   @@index([severity])
   @@index([category])
   @@index([fingerprint])
+  @@index([eventTimestamp])
+}
+
+model UserSettings {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  // LLM provider config
+  llmProvider        String?
+  llmApiKeyEncrypted String? @db.Text
+  llmApiKeyHint      String?
+
+  // S3-compatible storage config
+  s3Endpoint           String?
+  s3Region             String?
+  s3Bucket             String?
+  s3AccessKeyEncrypted String? @db.Text
+  s3SecretKeyEncrypted String? @db.Text
+  s3AccessKeyHint      String?
+  s3SecretKeyHint      String?
+  s3PathPrefix         String?
+  s3ForcePathStyle     Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 // Enums

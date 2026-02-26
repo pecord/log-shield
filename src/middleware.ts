@@ -4,30 +4,29 @@ import authConfig from "@/lib/auth.config";
 const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
-  const isAuthenticated = !!req.auth;
+  const isLoggedIn = !!req.auth;
   const { pathname } = req.nextUrl;
 
-  const isAuthPage =
-    pathname.startsWith("/signin") || pathname.startsWith("/auth");
-  const isApiAuth = pathname.startsWith("/api/auth");
-  const isPublicPage = pathname === "/";
+  // Public routes that don't require authentication
+  const isPublicRoute =
+    pathname.startsWith("/signin") ||
+    pathname.startsWith("/signup") ||
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/api/auth");
 
-  if (isApiAuth || isPublicPage) return;
+  if (isPublicRoute) return;
 
-  if (isAuthPage && isAuthenticated) {
-    return Response.redirect(new URL("/dashboard", req.nextUrl));
-  }
-
-  if (!isAuthPage && !isAuthenticated) {
-    const callbackUrl = encodeURIComponent(pathname);
-    return Response.redirect(
-      new URL(`/signin?callbackUrl=${callbackUrl}`, req.nextUrl)
-    );
+  // Redirect unauthenticated users to sign-in
+  if (!isLoggedIn) {
+    const signInUrl = new URL("/signin", req.nextUrl.origin);
+    signInUrl.searchParams.set("callbackUrl", pathname);
+    return Response.redirect(signInUrl);
   }
 });
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|logo.svg|api/auth).*)",
+    // Match all routes except static files and Next.js internals
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.png$|.*\\.svg$).*)",
   ],
 };

@@ -1,4 +1,5 @@
-import { readFileSync } from "fs";
+import { createReadStream } from "fs";
+import { createInterface } from "readline";
 import type { RawFinding, RuleContext } from "@/analysis/types";
 import { checkSqlInjection } from "./rules/sql-injection";
 import { checkXss } from "./rules/xss";
@@ -10,8 +11,16 @@ import {
   resetSuspiciousStatusCounters,
 } from "./rules/suspicious-status";
 import { checkMaliciousAgent } from "./rules/malicious-agents";
-import { checkRateAnomaly } from "./rules/rate-anomaly";
-import { parseLogLines } from "./log-parser";
+import { checkRateAnomaly, ERROR_STATUS_REGEX } from "./rules/rate-anomaly";
+import { checkPrivilegeEscalation } from "./rules/privilege-escalation";
+import { checkDataExfiltration } from "./rules/data-exfiltration";
+import {
+  detectFormatFromSample,
+  normalizeLine,
+  parseCsvHeaderLine,
+  type LogFormat,
+} from "./log-parser";
+import { extractIp, extractTimestamp } from "./utils";
 
 /**
  * Type for a per-line rule function.
@@ -35,83 +44,106 @@ const LINE_RULES: LineRule[] = [
   checkCommandInjection,
   checkSuspiciousStatus,
   checkMaliciousAgent,
+  checkPrivilegeEscalation,
+  checkDataExfiltration,
 ];
+
+export interface RuleEngineResult {
+  findings: RawFinding[];
+  totalLinesProcessed: number;
+  skippedLineCount: number;
+  logFormat: LogFormat;
+}
+
+/** Number of lines to sample for format detection before processing. */
+const FORMAT_SAMPLE_SIZE = 10;
 
 /**
  * Run the rule-based threat detection engine against a log file.
  *
- * Process:
- *   1. Read the file and split into lines.
- *   2. Detect file format (JSONL, CSV, plain) and normalize lines.
- *   3. Initialize a shared RuleContext for stateful rules (brute-force, etc.).
- *   4. For each line, run all per-line rule functions and collect findings.
- *   5. After all lines are processed, run post-processing rules (rate-anomaly).
- *   6. Deduplicate findings by fingerprint.
- *   7. Return findings and metadata.
+ * True streaming implementation — processes each line individually via readline
+ * without accumulating all lines into memory. Format is detected from the first
+ * 10 lines, then each subsequent line is normalized and processed on-the-fly.
  *
- * @param filePath - Absolute path to the log file to analyze.
- * @returns Object containing findings array and total lines processed.
+ * Rate-anomaly stats (IP counters, error counts, timestamps) are accumulated
+ * in the RuleContext during per-line processing, so the post-processing step
+ * only analyzes the pre-collected data without re-scanning all lines.
  */
-export async function runRuleEngine(
-  filePath: string
-): Promise<{ findings: RawFinding[]; totalLinesProcessed: number }> {
-  // Read the file contents
-  const content = readFileSync(filePath, "utf-8");
-  const rawLines = content.split(/\r?\n/);
+export async function runRuleEngine(filePath: string): Promise<RuleEngineResult> {
+  const rl = createInterface({
+    input: createReadStream(filePath, { encoding: "utf-8" }),
+    crlfDelay: Infinity,
+  });
 
-  // Parse and normalize lines based on detected format (JSONL, CSV, plain text)
-  const parsedLines = parseLogLines(rawLines);
-
-  // Initialize shared context for stateful rules
-  const context: RuleContext = {
-    ipCounters: new Map<string, number>(),
-    ipRequestTimes: new Map<string, number[]>(),
-    totalLines: parsedLines.length,
-    lineIndex: 0,
-  };
+  // Phase 1: Sample first N lines for format detection
+  const sampleLines: string[] = [];
+  let lineIndex = 0;
+  let format: LogFormat = "plain";
+  let csvHeaders: string[] | undefined;
+  const skippedRef = { count: 0 };
+  let totalLinesProcessed = 0;
 
   // Reset any module-level state from previous runs
   resetSuspiciousStatusCounters();
 
+  const context: RuleContext = {
+    ipCounters: new Map(),
+    ipRequestTimes: new Map(),
+    ipDistinctUsers: new Map(),
+    ipRequestStats: new Map(),
+    totalLines: 0,
+    lineIndex: 0,
+  };
+
   const allFindings: RawFinding[] = [];
 
-  // Process each line through all per-line rules
-  for (let i = 0; i < parsedLines.length; i++) {
-    const { normalized, raw } = parsedLines[i];
+  for await (const line of rl) {
+    totalLinesProcessed++;
 
-    // Skip empty lines
-    if (!normalized || normalized.trim().length === 0) continue;
-
-    // Update context with current line index (0-based internally, 1-based for findings)
-    context.lineIndex = i;
-    const lineNumber = i + 1; // 1-based line number for human readability
-
-    // Run rules against normalized text, but findings store the raw line content
-    for (const rule of LINE_RULES) {
-      try {
-        const findings = rule(normalized, lineNumber, context);
-        // If the line was normalized, update lineContent to show the raw original
-        if (normalized !== raw) {
-          for (const finding of findings) {
-            finding.lineContent = raw.length > 500 ? raw.slice(0, 500) + "..." : raw;
-          }
+    // Phase 1: Collect sample for format detection
+    if (lineIndex < FORMAT_SAMPLE_SIZE) {
+      sampleLines.push(line);
+      if (sampleLines.length === FORMAT_SAMPLE_SIZE) {
+        format = detectFormatFromSample(sampleLines);
+        if (format === "csv" && sampleLines.length > 0) {
+          csvHeaders = parseCsvHeaderLine(sampleLines[0]);
         }
-        allFindings.push(...findings);
-      } catch (error) {
-        // Log but don't halt on individual rule errors
-        console.error(
-          `Rule engine error on line ${lineNumber}:`,
-          error instanceof Error ? error.message : error
-        );
+        // Process all buffered sample lines
+        for (let i = 0; i < sampleLines.length; i++) {
+          processLine(sampleLines[i], i, format, csvHeaders, context, allFindings, skippedRef);
+        }
+        lineIndex = sampleLines.length;
+        continue;
       }
+      lineIndex++;
+      continue;
+    }
+
+    // If we had fewer than FORMAT_SAMPLE_SIZE lines and haven't detected format yet,
+    // this won't happen — handled after the loop.
+
+    // Phase 2: Stream-process each line
+    processLine(line, lineIndex, format, csvHeaders, context, allFindings, skippedRef);
+    lineIndex++;
+  }
+
+  // Handle files with fewer lines than FORMAT_SAMPLE_SIZE
+  if (lineIndex <= FORMAT_SAMPLE_SIZE && sampleLines.length > 0 && sampleLines.length < FORMAT_SAMPLE_SIZE) {
+    format = detectFormatFromSample(sampleLines);
+    if (format === "csv" && sampleLines.length > 0) {
+      csvHeaders = parseCsvHeaderLine(sampleLines[0]);
+    }
+    for (let i = 0; i < sampleLines.length; i++) {
+      processLine(sampleLines[i], i, format, csvHeaders, context, allFindings, skippedRef);
     }
   }
 
-  // Run post-processing rules that need the full dataset
-  // Pass normalized lines for consistent pattern matching
-  const normalizedLines = parsedLines.map((p) => p.normalized);
+  // Update totalLines in context for any rules that need it
+  context.totalLines = totalLinesProcessed;
+
+  // Post-processing: rate anomaly uses pre-accumulated context stats
   try {
-    const rateFindings = checkRateAnomaly(normalizedLines);
+    const rateFindings = checkRateAnomaly(context);
     allFindings.push(...rateFindings);
   } catch (error) {
     console.error(
@@ -133,6 +165,81 @@ export async function runRuleEngine(
 
   return {
     findings: deduplicatedFindings,
-    totalLinesProcessed: parsedLines.length,
+    totalLinesProcessed,
+    skippedLineCount: skippedRef.count,
+    logFormat: format,
   };
+}
+
+/**
+ * Process a single line: normalize, run rules, accumulate rate-anomaly stats.
+ */
+function processLine(
+  raw: string,
+  index: number,
+  format: LogFormat,
+  csvHeaders: string[] | undefined,
+  context: RuleContext,
+  allFindings: RawFinding[],
+  skippedRef: { count: number }
+): void {
+  // Skip CSV header row
+  if (format === "csv" && index === 0) return;
+
+  const { normalized, error } = normalizeLine(raw, format, csvHeaders);
+  if (error) skippedRef.count++;
+
+  // Skip empty lines
+  if (!normalized || normalized.trim().length === 0) {
+    skippedRef.count++;
+    return;
+  }
+
+  context.lineIndex = index;
+  const lineNumber = index + 1;
+
+  // Extract timestamp once per line — used for rate-anomaly stats and finding enrichment
+  const lineTs = extractTimestamp(normalized);
+
+  // Accumulate rate-anomaly stats on-the-fly (avoids re-scanning)
+  const ip = extractIp(normalized);
+  if (ip) {
+    let stats = context.ipRequestStats.get(ip);
+    if (!stats) {
+      stats = { total: 0, errors: 0, timestamps: [], sampleLines: [] };
+      context.ipRequestStats.set(ip, stats);
+    }
+    stats.total++;
+    if (ERROR_STATUS_REGEX.test(normalized)) {
+      stats.errors++;
+    }
+    if (lineTs !== null) {
+      stats.timestamps.push(lineTs);
+    }
+    if (stats.sampleLines.length < 3) {
+      stats.sampleLines.push(
+        raw.length > 200 ? raw.slice(0, 200) + "..." : raw
+      );
+    }
+  }
+
+  // Run all per-line rules
+  for (const rule of LINE_RULES) {
+    try {
+      const findings = rule(normalized, lineNumber, context);
+      for (const finding of findings) {
+        if (normalized !== raw) {
+          finding.lineContent = raw.length > 500 ? raw.slice(0, 500) + "..." : raw;
+        }
+        // Attach the log event timestamp extracted from this line
+        finding.eventTimestamp = lineTs;
+      }
+      allFindings.push(...findings);
+    } catch (error) {
+      console.error(
+        `Rule engine error on line ${lineNumber}:`,
+        error instanceof Error ? error.message : error
+      );
+    }
+  }
 }

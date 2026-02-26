@@ -9,7 +9,7 @@ interface CmdPattern {
   description: string;
 }
 
-const CMD_PATTERNS: CmdPattern[] = [
+export const CMD_PATTERNS: CmdPattern[] = [
   // Shell metacharacters in request parameters (common injection vectors)
   {
     regex: /[?&=][^&]*[;|`]\s*(ls|cat|id|whoami|uname|pwd|wget|curl|nc|bash|sh|python|perl|ruby|php)\b/i,

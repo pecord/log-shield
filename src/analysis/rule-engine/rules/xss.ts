@@ -9,7 +9,7 @@ interface XssPattern {
   description: string;
 }
 
-const XSS_PATTERNS: XssPattern[] = [
+export const XSS_PATTERNS: XssPattern[] = [
   // Script tags
   {
     regex: /<\s*script[^>]*>/i,

@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -104,6 +105,49 @@ function TableCaption({
   )
 }
 
+type SortDir = "asc" | "desc" | null;
+
+interface SortableTableHeadProps extends React.ComponentProps<"th"> {
+  sortKey: string;
+  activeSort: string | null;
+  direction: SortDir;
+  onSort: (key: string) => void;
+}
+
+function SortableTableHead({
+  sortKey,
+  activeSort,
+  direction,
+  onSort,
+  className,
+  children,
+  ...props
+}: SortableTableHeadProps) {
+  const isActive = activeSort === sortKey;
+  const Icon = isActive
+    ? direction === "asc"
+      ? ArrowUp
+      : ArrowDown
+    : ArrowUpDown;
+
+  return (
+    <th
+      data-slot="table-head"
+      className={cn(
+        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap cursor-pointer select-none hover:bg-muted/50 transition-colors [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        className
+      )}
+      onClick={() => onSort(sortKey)}
+      {...props}
+    >
+      <span className="inline-flex items-center gap-1">
+        {children}
+        <Icon className={cn("h-3.5 w-3.5", isActive ? "text-foreground" : "text-muted-foreground/50")} />
+      </span>
+    </th>
+  );
+}
+
 export {
   Table,
   TableHeader,
@@ -113,4 +157,7 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  SortableTableHead,
 }
+
+export type { SortDir }

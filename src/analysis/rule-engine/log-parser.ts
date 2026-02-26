@@ -6,13 +6,19 @@
  * that the rule engine's regex patterns can match against.
  */
 
-type LogFormat = "jsonl" | "csv" | "plain";
+export type LogFormat = "jsonl" | "csv" | "plain";
 
 interface ParsedLine {
   /** The normalized text representation for regex matching */
   normalized: string;
   /** The original raw line (preserved for line content in findings) */
   raw: string;
+}
+
+export interface ParseResult {
+  lines: ParsedLine[];
+  format: LogFormat;
+  parseErrors: number;
 }
 
 /**
@@ -53,10 +59,10 @@ export function detectFormat(lines: string[]): LogFormat {
  * Produces output like: key=value key2=value2 ...
  * This format is easy for regex patterns to match against.
  */
-function flattenJsonLine(line: string): string {
+function flattenJsonLine(line: string): { text: string; error: boolean } {
   try {
     const obj = JSON.parse(line);
-    if (typeof obj !== "object" || obj === null) return line;
+    if (typeof obj !== "object" || obj === null) return { text: line, error: false };
 
     const parts: string[] = [];
     for (const [key, value] of Object.entries(obj)) {
@@ -72,9 +78,9 @@ function flattenJsonLine(line: string): string {
         parts.push(`${key}=${String(value)}`);
       }
     }
-    return parts.join(" ");
+    return { text: parts.join(" "), error: false };
   } catch {
-    return line;
+    return { text: line, error: true };
   }
 }
 
@@ -130,28 +136,82 @@ function flattenCsvLine(line: string, headers: string[]): string {
 }
 
 /**
- * Parse all lines of a log file into normalized form.
- * Returns an array of ParsedLine objects where .normalized
- * is suitable for regex matching and .raw is the original text.
+ * Detect format from a small sample of lines (for streaming use).
  */
-export function parseLogLines(lines: string[]): ParsedLine[] {
-  const format = detectFormat(lines);
+export function detectFormatFromSample(sampleLines: string[]): LogFormat {
+  return detectFormat(sampleLines);
+}
 
+/**
+ * Normalize a single line based on previously detected format.
+ * For CSV, pass the parsed header columns.
+ */
+export function normalizeLine(
+  line: string,
+  format: LogFormat,
+  csvHeaders?: string[]
+): { normalized: string; error: boolean } {
   if (format === "plain") {
-    return lines.map((line) => ({ normalized: line, raw: line }));
+    return { normalized: line, error: false };
   }
 
   if (format === "jsonl") {
-    return lines.map((line) => ({
-      normalized: line.trim().startsWith("{") ? flattenJsonLine(line) : line,
-      raw: line,
-    }));
+    if (line.trim().startsWith("{")) {
+      const result = flattenJsonLine(line);
+      return { normalized: result.text, error: result.error };
+    }
+    return { normalized: line, error: false };
+  }
+
+  if (format === "csv" && csvHeaders) {
+    if (line.trim()) {
+      return { normalized: flattenCsvLine(line, csvHeaders), error: false };
+    }
+    return { normalized: line, error: false };
+  }
+
+  return { normalized: line, error: false };
+}
+
+/**
+ * Parse a CSV header line (exposed for streaming use).
+ */
+export function parseCsvHeaderLine(headerLine: string): string[] {
+  return parseCsvHeader(headerLine);
+}
+
+/**
+ * Parse all lines of a log file into normalized form.
+ * Returns parsed lines, detected format, and count of parse errors.
+ */
+export function parseLogLines(lines: string[]): ParseResult {
+  const format = detectFormat(lines);
+  let parseErrors = 0;
+
+  if (format === "plain") {
+    return {
+      lines: lines.map((line) => ({ normalized: line, raw: line })),
+      format,
+      parseErrors: 0,
+    };
+  }
+
+  if (format === "jsonl") {
+    const parsed = lines.map((line) => {
+      if (line.trim().startsWith("{")) {
+        const result = flattenJsonLine(line);
+        if (result.error) parseErrors++;
+        return { normalized: result.text, raw: line };
+      }
+      return { normalized: line, raw: line };
+    });
+    return { lines: parsed, format, parseErrors };
   }
 
   // CSV: first line is header
   if (format === "csv" && lines.length > 0) {
     const headers = parseCsvHeader(lines[0]);
-    return lines.map((line, i) => {
+    const parsed = lines.map((line, i) => {
       if (i === 0) {
         // Skip the header row (return it as-is, will be skipped as non-match)
         return { normalized: line, raw: line };
@@ -161,7 +221,12 @@ export function parseLogLines(lines: string[]): ParsedLine[] {
         raw: line,
       };
     });
+    return { lines: parsed, format, parseErrors: 0 };
   }
 
-  return lines.map((line) => ({ normalized: line, raw: line }));
+  return {
+    lines: lines.map((line) => ({ normalized: line, raw: line })),
+    format,
+    parseErrors: 0,
+  };
 }

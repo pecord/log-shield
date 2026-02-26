@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { StatsCards } from "@/components/dashboard/stats-cards";
 import { SeverityChart } from "@/components/dashboard/severity-chart";
 import { ThreatTypeChart } from "@/components/dashboard/threat-type-chart";
@@ -34,10 +36,11 @@ interface DashboardStats {
     category: string;
     uploadFileName: string;
   }[];
-  timeline: { date: string; findings: number }[];
+  timeline: { date: string; critical: number; high: number; other: number }[];
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -45,7 +48,10 @@ export default function DashboardPage() {
     fetch("/api/dashboard/stats")
       .then((res) => res.json())
       .then(setStats)
-      .catch(console.error)
+      .catch((err: unknown) => {
+        console.error("Failed to load dashboard:", err);
+        toast.error("Failed to load dashboard data");
+      })
       .finally(() => setIsLoading(false));
   }, []);
 
@@ -97,7 +103,16 @@ export default function DashboardPage() {
         <ThreatTypeChart data={stats.categoryDistribution} />
       </div>
 
-      <TimelineChart data={stats.timeline} />
+      <TimelineChart
+        data={stats.timeline}
+        onDateClick={(date, severity) => {
+          const params = new URLSearchParams();
+          params.set("dateStart", date);
+          params.set("dateEnd", date);
+          if (severity) params.set("severity", severity);
+          router.push(`/findings?${params}`);
+        }}
+      />
 
       <div className="grid gap-4 md:grid-cols-2">
         {/* Recent Uploads */}
@@ -165,7 +180,7 @@ export default function DashboardPage() {
                     className="flex items-start justify-between gap-2 rounded-lg p-2"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">
+                      <p className="truncate text-sm font-medium" title={threat.title}>
                         {threat.title}
                       </p>
                       <p className="text-xs text-muted-foreground">

@@ -1,7 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, AlertTriangle, ShieldAlert, Activity } from "lucide-react";
+import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface StatsCardsProps {
   totalUploads: number;
@@ -18,45 +18,51 @@ export function StatsCards({
 }: StatsCardsProps) {
   const cards = [
     {
-      title: "Total Uploads",
+      label: "Uploads",
       value: totalUploads,
-      icon: FileText,
       color: "text-blue-500",
+      accent: "#3b82f6",
+      href: "/uploads",
     },
     {
-      title: "Total Findings",
+      label: "Findings",
       value: totalFindings,
-      icon: Activity,
       color: "text-yellow-500",
+      accent: "#eab308",
+      href: "/findings",
     },
     {
-      title: "Critical Threats",
+      label: "Critical",
       value: criticalCount,
-      icon: ShieldAlert,
       color: "text-red-500",
+      accent: "#ef4444",
+      href: "/findings?severity=CRITICAL",
     },
     {
-      title: "High Severity",
+      label: "High",
       value: highCount,
-      icon: AlertTriangle,
       color: "text-orange-500",
+      accent: "#f97316",
+      href: "/findings?severity=HIGH",
     },
   ];
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {cards.map((card) => (
-        <Card key={card.title}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {card.title}
-            </CardTitle>
-            <card.icon className={`h-4 w-4 ${card.color}`} />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{card.value}</div>
-          </CardContent>
-        </Card>
+        <Link key={card.label} href={card.href}>
+          <Card
+            className="card-interactive card-accent cursor-pointer"
+            style={{ "--card-accent-color": card.accent } as React.CSSProperties}
+          >
+            <CardContent className="py-3 text-center">
+              <p className={`text-2xl font-bold ${card.color}`}>
+                {card.value}
+              </p>
+              <p className="text-xs text-muted-foreground">{card.label}</p>
+            </CardContent>
+          </Card>
+        </Link>
       ))}
     </div>
   );

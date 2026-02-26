@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { runAnalysisPipeline } from "@/analysis/pipeline";
+import { createRateLimiter } from "@/lib/rate-limit";
+
+const analyzeLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 20 });
 
 export async function POST(
   request: NextRequest,
@@ -10,6 +13,14 @@ export async function POST(
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { allowed, retryAfterMs } = analyzeLimiter.check(`analyze:${session.user.id}`);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many analysis requests. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(Math.ceil(retryAfterMs / 1000)) } }
+    );
   }
 
   const { id } = await params;
@@ -56,7 +67,12 @@ export async function POST(
     });
   }
 
-  // Fire and forget - pipeline runs in background
+  // Fire and forget - pipeline runs in background.
+  // TODO: In serverless environments (Vercel, Lambda), this fire-and-forget pattern
+  // will be killed when the response is sent. Migrate to one of:
+  //   - Next.js after() API (next@15+): import { after } from 'next/server'; after(() => runAnalysisPipeline(id))
+  //   - A background job queue (BullMQ, Inngest, Trigger.dev)
+  //   - Vercel Functions with maxDuration + streaming response
   runAnalysisPipeline(id).catch((err) =>
     console.error("[Analyze] Pipeline error:", err)
   );

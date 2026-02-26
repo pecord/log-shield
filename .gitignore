@@ -39,6 +39,17 @@ yarn-error.log*
 /uploads/*
 !/uploads/.gitkeep
 
+# datasets (large Kaggle datasets for testing)
+/datasets/
+
+# test logs
+/test-logs/
+/logs.csv
+/logs.jsonl
+
+# claude code (IDE tool config)
+.claude/agents/
+
 # vercel
 .vercel
 

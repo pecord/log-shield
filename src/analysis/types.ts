@@ -29,11 +29,17 @@ export interface RawFinding {
   confidence: number | null;
   mitreTactic: string | null;
   mitreTechnique: string | null;
+  /** Timestamp extracted from the log line (epoch ms), null if not parseable */
+  eventTimestamp?: number | null;
 }
 
 export interface RuleContext {
   ipCounters: Map<string, number>;
   ipRequestTimes: Map<string, number[]>;
+  /** Track distinct usernames per IP for password spray detection */
+  ipDistinctUsers: Map<string, Set<string>>;
+  /** Track per-IP request counts and error counts for rate-anomaly streaming */
+  ipRequestStats: Map<string, { total: number; errors: number; timestamps: number[]; sampleLines: string[] }>;
   totalLines: number;
   lineIndex: number;
 }

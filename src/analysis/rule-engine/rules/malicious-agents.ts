@@ -12,7 +12,7 @@ interface AgentPattern {
 /**
  * Known attack tool user agents and suspicious agent patterns.
  */
-const MALICIOUS_AGENT_PATTERNS: AgentPattern[] = [
+export const MALICIOUS_AGENT_PATTERNS: AgentPattern[] = [
   // Vulnerability scanners
   {
     regex: /nikto/i,
@@ -183,12 +183,6 @@ const MALICIOUS_AGENT_PATTERNS: AgentPattern[] = [
     description: "Request from a raw Java HTTP client, which may indicate automated scanning or bot activity",
   },
 ];
-
-/**
- * Regex to extract user agent from common log formats.
- * Matches the last quoted string in Apache/Nginx combined log format.
- */
-const USER_AGENT_REGEX = /"([^"]*)"[^"]*$/;
 
 /**
  * Alternate: some logs have User-Agent: header explicitly

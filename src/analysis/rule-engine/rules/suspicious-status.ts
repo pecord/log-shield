@@ -13,7 +13,7 @@ interface StatusInfo {
   mitreTechnique: string;
 }
 
-const STATUS_MAP: StatusInfo[] = [
+export const STATUS_MAP: StatusInfo[] = [
   {
     code: "400",
     severity: "LOW",

@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { MAX_PAGE_SIZE } from "@/lib/constants";
+
+type Severity = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | "INFO";
+type ThreatCategory = "SQL_INJECTION" | "XSS" | "BRUTE_FORCE" | "DIRECTORY_TRAVERSAL" | "COMMAND_INJECTION" | "SUSPICIOUS_STATUS_CODE" | "MALICIOUS_USER_AGENT" | "RATE_ANOMALY" | "PRIVILEGE_ESCALATION" | "DATA_EXFILTRATION" | "RECONNAISSANCE" | "OTHER";
+type Source = "RULE_BASED" | "LLM";
+
+const VALID_SEVERITIES = new Set<string>(["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"]);
+const VALID_CATEGORIES = new Set<string>(["SQL_INJECTION", "XSS", "BRUTE_FORCE", "DIRECTORY_TRAVERSAL", "COMMAND_INJECTION", "SUSPICIOUS_STATUS_CODE", "MALICIOUS_USER_AGENT", "RATE_ANOMALY", "PRIVILEGE_ESCALATION", "DATA_EXFILTRATION", "RECONNAISSANCE", "OTHER"]);
+const VALID_SOURCES = new Set<string>(["RULE_BASED", "LLM"]);
 
 export async function GET(
   request: NextRequest,
@@ -14,8 +23,8 @@ export async function GET(
   const { id } = await params;
   const { searchParams } = new URL(request.url);
 
-  const page = parseInt(searchParams.get("page") || "1");
-  const limit = parseInt(searchParams.get("limit") || "50");
+  const page = Math.max(1, parseInt(searchParams.get("page") || "1") || 1);
+  const limit = Math.min(MAX_PAGE_SIZE, Math.max(1, parseInt(searchParams.get("limit") || "50") || 50));
   const severity = searchParams.get("severity");
   const category = searchParams.get("category");
   const source = searchParams.get("source");
@@ -38,15 +47,19 @@ export async function GET(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  // Build findings filter
+  // Build findings filter — validate enum params against allowlists
+  const validSeverity = severity && VALID_SEVERITIES.has(severity) ? (severity as Severity) : undefined;
+  const validCategory = category && VALID_CATEGORIES.has(category) ? (category as ThreatCategory) : undefined;
+  const validSource = source && VALID_SOURCES.has(source) ? (source as Source) : undefined;
+
   const findingsWhere = {
     analysisResultId: id,
-    ...(severity ? { severity: severity as "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | "INFO" } : {}),
-    ...(category ? { category: category as "SQL_INJECTION" | "XSS" | "BRUTE_FORCE" | "DIRECTORY_TRAVERSAL" | "COMMAND_INJECTION" | "SUSPICIOUS_STATUS_CODE" | "MALICIOUS_USER_AGENT" | "RATE_ANOMALY" | "PRIVILEGE_ESCALATION" | "DATA_EXFILTRATION" | "RECONNAISSANCE" | "OTHER" } : {}),
-    ...(source ? { source: source as "RULE_BASED" | "LLM" } : {}),
+    ...(validSeverity ? { severity: validSeverity } : {}),
+    ...(validCategory ? { category: validCategory } : {}),
+    ...(validSource ? { source: validSource } : {}),
   };
 
-  const [findings, totalFilteredFindings] = await Promise.all([
+  const [findings, totalFilteredFindings, categoryBreakdown] = await Promise.all([
     prisma.finding.findMany({
       where: findingsWhere,
       orderBy: [{ severity: "asc" }, { lineNumber: "asc" }],
@@ -54,6 +67,11 @@ export async function GET(
       take: limit,
     }),
     prisma.finding.count({ where: findingsWhere }),
+    prisma.finding.groupBy({
+      by: ["category"],
+      where: { analysisResultId: id },
+      _count: true,
+    }),
   ]);
 
   return NextResponse.json({
@@ -75,6 +93,10 @@ export async function GET(
     errorMessage: analysisResult.errorMessage,
     fileName: analysisResult.upload.fileName,
     findings,
+    categoryBreakdown: categoryBreakdown.map((c) => ({
+      category: c.category,
+      _count: c._count,
+    })),
     pagination: {
       page,
       limit,

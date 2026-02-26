@@ -57,7 +57,7 @@ export default async function Home() {
             </div>
             <h3 className="font-semibold">Upload Logs</h3>
             <p className="text-sm text-muted-foreground">
-              Drag and drop your .txt or .log files for instant analysis.
+              Drag and drop your .txt, .log, .csv, or .jsonl files for instant analysis.
             </p>
           </div>
           <div className="flex flex-col items-center gap-3 text-center">

@@ -9,7 +9,7 @@ interface TraversalPattern {
   description: string;
 }
 
-const TRAVERSAL_PATTERNS: TraversalPattern[] = [
+export const TRAVERSAL_PATTERNS: TraversalPattern[] = [
   // Basic directory traversal
   {
     regex: /\.\.\//,

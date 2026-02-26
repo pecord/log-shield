@@ -1,5 +1,10 @@
 import type { RawFinding, RuleContext } from "@/analysis/types";
-import { computeFingerprint, extractIp, truncateLine } from "../utils";
+import {
+  computeFingerprint,
+  extractIp,
+  extractUsername,
+  truncateLine,
+} from "../utils";
 
 /**
  * Threshold: number of failed auth attempts from a single IP before flagging.
@@ -7,9 +12,15 @@ import { computeFingerprint, extractIp, truncateLine } from "../utils";
 const BRUTE_FORCE_THRESHOLD = 10;
 
 /**
+ * Threshold: number of distinct usernames targeted from a single IP
+ * before flagging as a password spray attack.
+ */
+const PASSWORD_SPRAY_THRESHOLD = 5;
+
+/**
  * Patterns that indicate failed authentication attempts.
  */
-const FAILED_AUTH_PATTERNS: RegExp[] = [
+export const FAILED_AUTH_PATTERNS: RegExp[] = [
   /Failed password/i,
   /authentication fail(ed|ure)/i,
   /invalid credentials/i,
@@ -61,6 +72,43 @@ export function checkBruteForce(
   times.push(Date.now());
   context.ipRequestTimes.set(ip, times);
 
+  // --- Password Spray Detection ---
+  // Track distinct usernames per IP to detect spray attacks
+  const username = extractUsername(line);
+  if (username) {
+    if (!context.ipDistinctUsers.has(ip)) {
+      context.ipDistinctUsers.set(ip, new Set());
+    }
+    const users = context.ipDistinctUsers.get(ip)!;
+    users.add(username.toLowerCase());
+
+    // Flag when distinct user count reaches the spray threshold
+    // Only flag once at the exact threshold to avoid noise
+    if (users.size === PASSWORD_SPRAY_THRESHOLD) {
+      findings.push({
+        severity: "CRITICAL",
+        category: "BRUTE_FORCE",
+        title: `Password Spray Attack: ${users.size} distinct users targeted from ${ip}`,
+        description: `IP address ${ip} has attempted authentication against ${users.size} distinct user accounts (${[...users].join(", ")}). This pattern is consistent with a password spray attack, where an attacker tries a small number of common passwords against many accounts to avoid lockout detection.`,
+        lineNumber,
+        lineContent,
+        matchedPattern,
+        source: "RULE_BASED",
+        fingerprint: computeFingerprint(
+          "BRUTE_FORCE",
+          lineNumber,
+          `spray:${ip}:${users.size}`
+        ),
+        recommendation:
+          "Implement login rate limiting across all accounts, not just per-account. Deploy anomaly detection that correlates failed logins across users from the same source IP. Use smart lockout that considers IP reputation. Enforce strong password policies and MFA to reduce spray effectiveness. Monitor for leaked credential databases.",
+        confidence: 0.95,
+        mitreTactic: "Credential Access",
+        mitreTechnique: "T1110.003 - Password Spraying",
+      });
+    }
+  }
+
+  // --- Standard Brute Force Detection ---
   // Flag when threshold is reached (only flag once at the exact threshold,
   // then again at each multiple of the threshold to reduce noise)
   if (

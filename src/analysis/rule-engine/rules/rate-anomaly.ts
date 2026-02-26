@@ -1,5 +1,5 @@
-import type { RawFinding } from "@/analysis/types";
-import { computeFingerprint, extractIp, extractTimestamp } from "../utils";
+import type { RawFinding, RuleContext } from "@/analysis/types";
+import { computeFingerprint } from "../utils";
 
 /**
  * Thresholds for rate anomaly detection.
@@ -10,73 +10,34 @@ const ERROR_RATE_THRESHOLD = 0.8; // 80%
 /**
  * HTTP error status code pattern (4xx and 5xx).
  */
-const ERROR_STATUS_REGEX =
+export const ERROR_STATUS_REGEX =
   /(?:HTTP\/[\d.]+["']\s+|(?:status[=:\s]+)|(?:returned\s+)|(?:HTTP\s+))([45]\d{2})\b/i;
 
-interface IpStats {
-  totalRequests: number;
-  errorRequests: number;
-  timestamps: number[];
-  sampleLines: string[];
-}
-
 /**
- * Post-processing rule that analyzes ALL log lines for request rate anomalies.
- * This function is called after all per-line rules have been processed.
+ * Post-processing rule that analyzes pre-accumulated IP stats from the streaming context.
+ * Stats are collected during per-line processing in the rule engine, so this
+ * function does NOT re-scan all lines — it just analyzes the already-collected data.
  *
  * It detects:
  *   1. IPs with more than REQUEST_COUNT_THRESHOLD total requests (volume anomaly)
  *   2. IPs with more than ERROR_RATE_THRESHOLD error rate (error-heavy traffic)
  *   3. IPs with burst patterns (many requests in short time windows)
- *
- * @param lines - All log file lines
- * @returns Array of findings for rate anomalies
  */
-export function checkRateAnomaly(lines: string[]): RawFinding[] {
+export function checkRateAnomaly(context: RuleContext): RawFinding[] {
   const findings: RawFinding[] = [];
-  const ipStats = new Map<string, IpStats>();
 
-  // First pass: collect stats per IP
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const ip = extractIp(line);
-    if (!ip) continue;
+  for (const [ip, stats] of context.ipRequestStats) {
+    // Use the earliest observed timestamp for this IP's aggregate findings
+    const earliestTs = stats.timestamps.length > 0
+      ? Math.min(...stats.timestamps)
+      : null;
 
-    let stats = ipStats.get(ip);
-    if (!stats) {
-      stats = { totalRequests: 0, errorRequests: 0, timestamps: [], sampleLines: [] };
-      ipStats.set(ip, stats);
-    }
-
-    stats.totalRequests++;
-
-    // Check if this is an error response
-    if (ERROR_STATUS_REGEX.test(line)) {
-      stats.errorRequests++;
-    }
-
-    // Try to extract timestamp
-    const ts = extractTimestamp(line);
-    if (ts !== null) {
-      stats.timestamps.push(ts);
-    }
-
-    // Keep first few sample lines for context
-    if (stats.sampleLines.length < 3) {
-      stats.sampleLines.push(
-        line.length > 200 ? line.slice(0, 200) + "..." : line
-      );
-    }
-  }
-
-  // Second pass: analyze collected stats
-  for (const [ip, stats] of ipStats) {
     // Check 1: High request volume
-    if (stats.totalRequests >= REQUEST_COUNT_THRESHOLD) {
+    if (stats.total >= REQUEST_COUNT_THRESHOLD) {
       const severity =
-        stats.totalRequests >= REQUEST_COUNT_THRESHOLD * 10
+        stats.total >= REQUEST_COUNT_THRESHOLD * 10
           ? "CRITICAL"
-          : stats.totalRequests >= REQUEST_COUNT_THRESHOLD * 5
+          : stats.total >= REQUEST_COUNT_THRESHOLD * 5
             ? "HIGH"
             : "MEDIUM";
 
@@ -88,7 +49,7 @@ export function checkRateAnomaly(lines: string[]): RawFinding[] {
           (stats.timestamps[stats.timestamps.length - 1] - stats.timestamps[0]) /
           1000;
         if (durationSeconds > 0) {
-          const rps = (stats.totalRequests / durationSeconds).toFixed(1);
+          const rps = (stats.total / durationSeconds).toFixed(1);
           rateInfo = ` Average rate: ${rps} requests/second over ${Math.round(durationSeconds)}s.`;
         }
       }
@@ -96,32 +57,33 @@ export function checkRateAnomaly(lines: string[]): RawFinding[] {
       findings.push({
         severity,
         category: "RATE_ANOMALY",
-        title: `High Request Volume: ${stats.totalRequests} requests from ${ip}`,
-        description: `IP address ${ip} generated ${stats.totalRequests} requests across the analyzed log period, significantly exceeding the threshold of ${REQUEST_COUNT_THRESHOLD}.${rateInfo} This may indicate automated scanning, denial-of-service attack, or bot activity.`,
+        title: `High Request Volume: ${stats.total} requests from ${ip}`,
+        description: `IP address ${ip} generated ${stats.total} requests across the analyzed log period, significantly exceeding the threshold of ${REQUEST_COUNT_THRESHOLD}.${rateInfo} This may indicate automated scanning, denial-of-service attack, or bot activity.`,
         lineNumber: null,
         lineContent: stats.sampleLines[0] ?? null,
-        matchedPattern: `${stats.totalRequests} requests from ${ip}`,
+        matchedPattern: `${stats.total} requests from ${ip}`,
         source: "RULE_BASED",
         fingerprint: computeFingerprint(
           "RATE_ANOMALY",
           null,
-          `volume:${ip}:${stats.totalRequests}`
+          `volume:${ip}:${stats.total}`
         ),
         recommendation:
           "Implement rate limiting per IP address using a reverse proxy or WAF. Consider deploying a CDN with DDoS protection. Use progressive rate limiting that increases restrictions as request volume grows. Set up automated IP blocking for extreme cases. Review if the IP belongs to a legitimate service (search engine crawler, monitoring tool) before blocking.",
         confidence: 0.85,
         mitreTactic: "Impact",
         mitreTechnique: "T1498 - Network Denial of Service",
+    eventTimestamp: earliestTs,
       });
     }
 
     // Check 2: High error rate
     if (
-      stats.totalRequests >= 10 &&
-      stats.errorRequests / stats.totalRequests >= ERROR_RATE_THRESHOLD
+      stats.total >= 10 &&
+      stats.errors / stats.total >= ERROR_RATE_THRESHOLD
     ) {
       const errorRate = (
-        (stats.errorRequests / stats.totalRequests) *
+        (stats.errors / stats.total) *
         100
       ).toFixed(1);
 
@@ -129,7 +91,7 @@ export function checkRateAnomaly(lines: string[]): RawFinding[] {
         severity: "HIGH",
         category: "RATE_ANOMALY",
         title: `High Error Rate: ${errorRate}% errors from ${ip}`,
-        description: `IP address ${ip} has a ${errorRate}% error response rate (${stats.errorRequests} errors out of ${stats.totalRequests} requests). A high error rate typically indicates automated scanning, fuzzing, or brute-force activity where most requests hit invalid endpoints or fail authentication.`,
+        description: `IP address ${ip} has a ${errorRate}% error response rate (${stats.errors} errors out of ${stats.total} requests). A high error rate typically indicates automated scanning, fuzzing, or brute-force activity where most requests hit invalid endpoints or fail authentication.`,
         lineNumber: null,
         lineContent: stats.sampleLines[0] ?? null,
         matchedPattern: `${errorRate}% error rate from ${ip}`,
@@ -144,6 +106,7 @@ export function checkRateAnomaly(lines: string[]): RawFinding[] {
         confidence: 0.8,
         mitreTactic: "Reconnaissance",
         mitreTechnique: "T1595 - Active Scanning",
+    eventTimestamp: earliestTs,
       });
     }
 
@@ -184,6 +147,7 @@ export function checkRateAnomaly(lines: string[]): RawFinding[] {
             confidence: 0.85,
             mitreTactic: "Impact",
             mitreTechnique: "T1498 - Network Denial of Service",
+    eventTimestamp: earliestTs,
           });
 
           // Only flag one burst per IP

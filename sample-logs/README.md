@@ -36,6 +36,59 @@ This directory contains synthetic log files designed to test cybersecurity log a
 - **Suspicious 3 AM access** (from `10.0.0.200` as `user707`): Off-hours bulk downloads, full database backup, and admin log access between 3:00-3:02 AM
 - **Rate anomaly / scraping** (from `45.33.32.156`): 50+ unauthenticated requests within 20 seconds systematically enumerating products, users, and orders
 
+---
+
+## CICIDS2017 Network Flow Datasets
+
+Real-world network flow data from the [Canadian Institute for Cybersecurity IDS 2017 dataset](https://www.unb.ca/cic/datasets/ids-2017.html) (via Kaggle). Each CSV contains labeled network flows with 80+ features including packet counts, byte counts, flow duration, flag counts, and IAT statistics.
+
+### cicids-sql-injection.csv (25 rows, 21KB)
+**Attack type:** SQL Injection (Web Attack)
+**Source:** CICIDS2017 Thursday morning capture
+**Content:** 24 SQL injection attack flows. Very small dataset — useful for quick tests.
+
+### cicids-xss.csv (1,359 rows, 913KB)
+**Attack type:** Cross-Site Scripting (Web Attack)
+**Source:** CICIDS2017 Thursday morning capture
+**Content:** 1,358 XSS attack flows from the web attacks session.
+
+### cicids-web-bruteforce.csv (2,735 rows, 1.9MB)
+**Attack type:** Web Brute Force (Web Attack)
+**Source:** CICIDS2017 Thursday morning capture
+**Content:** 2,734 brute force login attempt flows targeting web applications.
+
+### cicids-ftp-bruteforce.csv (1,501 rows, 1.2MB)
+**Attack type:** FTP-Patator (Brute Force)
+**Source:** CICIDS2017 Tuesday capture (sampled from 9,531 attack flows)
+**Content:** 1,500 FTP brute force attack flows using the Patator tool.
+
+### cicids-ssh-bruteforce.csv (1,501 rows, 1.2MB)
+**Attack type:** SSH-Patator (Brute Force)
+**Source:** CICIDS2017 Tuesday capture (sampled from 5,949 attack flows)
+**Content:** 1,500 SSH brute force attack flows using the Patator tool.
+
+### cicids-botnet-ares.csv (2,001 rows, 1.4MB)
+**Attack type:** Botnet (ARES)
+**Source:** CICIDS2017 Friday capture (sampled from 5,508 attack flows)
+**Content:** 2,000 botnet C2 communication flows from the ARES botnet.
+
+### cicids-heartbleed.csv (13 rows, 12KB)
+**Attack type:** Heartbleed (OpenSSL vulnerability exploit)
+**Source:** CICIDS2017 Wednesday capture
+**Content:** 12 Heartbleed exploit flows. Extremely small — good for targeted testing.
+
+### cicids-ddos.csv (1,301 rows, 443KB)
+**Attack type:** DDoS
+**Source:** CICIDS2017 Friday afternoon capture (sampled)
+**Content:** 1,000 DDoS attack flows + 300 benign flows (randomly sampled from 128K+ attack flows).
+
+### cicids-portscan.csv (1,301 rows, 321KB)
+**Attack type:** Port Scan
+**Source:** CICIDS2017 Friday afternoon capture (sampled)
+**Content:** 1,000 port scan flows + 300 benign flows (randomly sampled from 159K+ attack flows).
+
+---
+
 ## Threat Summary by IP
 
 | IP | Log File(s) | Threat Type |
@@ -49,3 +102,17 @@ This directory contains synthetic log files designed to test cybersecurity log a
 | `10.0.0.99` | auth-brute-force | SSH brute force, account compromise |
 | `10.0.0.100` | auth-brute-force | SSH dictionary attack |
 | `10.0.0.200` | application-mixed | Privilege escalation, data exfiltration, off-hours access |
+
+## CICIDS2017 Dataset Summary
+
+| File | Attack Type | Rows | Size |
+|------|-------------|------|------|
+| `cicids-sql-injection.csv` | SQL Injection | 25 | 21KB |
+| `cicids-xss.csv` | XSS | 1,359 | 913KB |
+| `cicids-web-bruteforce.csv` | Web Brute Force | 2,735 | 1.9MB |
+| `cicids-ftp-bruteforce.csv` | FTP Brute Force (Patator) | 1,501 | 1.2MB |
+| `cicids-ssh-bruteforce.csv` | SSH Brute Force (Patator) | 1,501 | 1.2MB |
+| `cicids-botnet-ares.csv` | Botnet (ARES C2) | 2,001 | 1.4MB |
+| `cicids-heartbleed.csv` | Heartbleed | 13 | 12KB |
+| `cicids-ddos.csv` | DDoS | 1,301 | 443KB |
+| `cicids-portscan.csv` | Port Scan | 1,301 | 321KB |

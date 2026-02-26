@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.env
+.env.local
+*.md
+!README.md
+uploads
+.claude
+coverage
+.vscode
+*.log

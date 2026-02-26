@@ -9,7 +9,7 @@ interface SqlPattern {
   description: string;
 }
 
-const SQL_PATTERNS: SqlPattern[] = [
+export const SQL_PATTERNS: SqlPattern[] = [
   // Classic UNION-based injection
   {
     regex: /UNION\s+(ALL\s+)?SELECT/i,
