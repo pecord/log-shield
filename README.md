@@ -334,7 +334,7 @@ Detection rules use well-documented regex patterns with explicit confidence scor
 ## Known Limitations
 
 - **No distributed job queue**: Analysis runs as a fire-and-forget async function with process-local recovery (startup resume + stall detector). There is no distributed coordination, no exponential backoff, and no horizontal scaling.
-- **No response caching**: Dashboard statistics and findings queries hit the database on every request. A production deployment would add Redis or SWR-based caching with short TTLs.
+- **No response caching**: Dashboard and findings queries hit the database on every request. Next.js has built-in `fetch` caching and `unstable_cache`, but our API routes serve user-scoped authenticated data (`force-dynamic`), so framework-level caching doesn't apply without per-user cache keys. A production deployment would add Redis with short per-user TTLs.
 - **In-process rate limiting**: API endpoints have per-user rate limiting via an in-memory sliding-window limiter. This is process-local — a multi-instance deployment would need a shared store (Redis, Upstash) or an edge rate-limit service.
 - **Single-process analysis**: Multiple concurrent analyses compete for the same Node.js event loop. A production system would use a separate worker process.
 - **Static detection thresholds**: Brute force threshold (10 attempts), rate anomaly threshold (100 requests), and burst window (5 seconds) are hardcoded. These could be made configurable per-user or per-analysis.
